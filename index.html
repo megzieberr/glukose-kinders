@@ -114,9 +114,18 @@ nav button.on{color:var(--meal)}
 .toast.on{opacity:1;transform:translateX(-50%)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @media print{ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  body{background:#fff;padding:0} nav,header p,.ranges,.card:not(.print),.toast{display:none!important}
-  .card.print{box-shadow:none;padding:0} .wrap{max-width:100%}
-  #printhead{display:block!important}
+  @page{size:A4 portrait;margin:12mm}
+  html{font-size:11pt} body{background:#fff;padding:0;color:#000}
+  nav,header,.ranges,.card:not(.print),.toast,.tip,.screen:not(#s-graph){display:none!important}
+  #s-graph{display:block!important}
+  .card.print{box-shadow:none;padding:0;margin:0 0 8px;page-break-inside:avoid;break-inside:avoid}
+  .wrap{max-width:100%;padding:0}
+  #printhead{display:block!important} #printhead h2{font-size:16pt} #printhead p{margin:2px 0 6px;font-size:9.5pt;color:#444}
+  .chartbox svg{max-height:115mm;width:100%}
+  .legend{font-size:8.5pt;margin-top:2px} .stats{gap:6px;margin-top:6px} .stat{padding:4px} .stat b{font-size:12pt} .stat span{font-size:8pt}
+  .inband{margin-top:6px;padding:6px 10px;font-size:9pt} .inband b{font-size:11pt}
+  #daytable table{font-size:8.5pt} #daytable td,#daytable th{padding:2px 0!important} #daytable td br{display:none} #daytable td span{margin-left:4px}
+  .card.print h2.dh{font-size:11pt;margin:6px 0 2px}
 }
 #printhead{display:none}
 </style>
@@ -173,8 +182,8 @@ nav button.on{color:var(--meal)}
     <div class="stats" id="stats"></div>
     <div class="inband" id="inband"></div>
   </div>
-  <div class="card">
-    <h2>Per dag</h2>
+  <div class="card print">
+    <h2 class="dh">Per dag</h2>
     <div id="daytable"></div>
   </div>
 </section>
@@ -328,7 +337,7 @@ function renderToday(){
 }
 
 /* ================= chart ================= */
-let range=7;
+let range=7, printMode=false;
 $('#ranges').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;range=+b.dataset.r;document.querySelectorAll('#ranges button').forEach(x=>x.classList.toggle('on',x===b));renderChart();});
 function visibleRows(){
   if(!range) return data;
@@ -340,7 +349,7 @@ function renderChart(){
   $('#leg-t').textContent=fmt(targets.lo)+'–'+fmt(targets.hi);
   if(!rows.length){box.innerHTML='<div class="empty">Nog geen lesings nie.</div>';$('#stats').innerHTML='';$('#inband').innerHTML='';$('#daytable').innerHTML='';return;}
   const days=[...new Set(rows.map(dayOf))].sort();
-  const W=box.clientWidth||360, H=Math.round(W*1.05), L=34, R=10, T=16, B=58;
+  const W=printMode?700:(box.clientWidth||360), H=printMode?340:Math.round(W*1.05), L=34, R=10, T=16, B=58;
   const vals=rows.map(r=>r.v);
   let ymin=Math.floor(Math.min(targets.lo,...vals)-0.5), ymax=Math.ceil(Math.max(targets.hi,...vals)+0.5);
   const slot=(W-L-R)/days.length;
@@ -415,6 +424,8 @@ $('#t-save').onclick=()=>{const lo=parseFloat($('#t-lo').value),hi=parseFloat($(
   targets={lo,hi}; localStorage.setItem(TKEY,JSON.stringify(targets)); renderAll(); toast('Teikens gestoor');};
 const csv=()=>'datum,tyd,glukose_mmol_L,tipe,nota\n'+data.map(r=>`${r.t.slice(0,10)},${r.t.slice(11)},${r.v},${KIND[r.k]},${(r.n||'').replace(/,/g,';')}`).join('\n');
 $('#b-print').onclick=()=>{show('graph');setTimeout(()=>window.print(),300);};
+window.addEventListener('beforeprint',()=>{printMode=true;renderChart();});
+window.addEventListener('afterprint',()=>{printMode=false;renderChart();});
 $('#b-share').onclick=async()=>{ const name='glukose-'+todayISO()+'.csv'; const file=new File([csv()],name,{type:'text/csv'});
   if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'Glukose-lesings'});return;}catch(e){if(e.name==='AbortError')return;}}
   const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=name;a.click(); toast('Lêer afgelaai'); };
