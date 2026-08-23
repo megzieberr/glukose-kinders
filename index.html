@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="af">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Glukose Kinders</title>
+<meta name="theme-color" content="#FBF6EC">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBF6EC; --paper2:#F3EBDC; --ink:#2B2A28; --ink2:#6B655C; --line:#E3D9C6;
+  --fast:#2A6F77; --meal:#C8553D; --hist:#9C948A; --band:#DCEBD1; --band2:#9FC58B;
+  --ok:#3E8E5A; --warn:#E0A72E; --white:#FFFDF8;
+  --r:22px; --shadow:0 4px 18px rgba(60,40,20,.10);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{font-size:17px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:600;line-height:1.35;
+  padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+h1,h2,.display{font-family:Fraunces,Georgia,serif;font-weight:700;margin:0}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--fast);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+header{padding:22px 0 8px}
+header h1{font-size:1.7rem;letter-spacing:-.01em}
+header p{margin:2px 0 0;color:var(--ink2);font-size:.95rem}
+.card{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:18px;margin:14px 0}
+.card h2{font-size:1.25rem;margin-bottom:10px}
+.screen{display:none}.screen.on{display:block}
+/* ---------- entry ---------- */
+.kinds{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.kind{padding:14px 10px;border-radius:16px;border:3px solid var(--line);background:var(--paper2);text-align:center;font-weight:800;font-size:1.05rem;line-height:1.15;transition:transform .12s}
+.kind small{display:block;font-weight:600;color:var(--ink2);font-size:.8rem;margin-top:2px}
+.kind.on{color:#fff;border-color:transparent;transform:scale(1.02)}
+.kind.on small{color:rgba(255,255,255,.85)}
+.kind[data-k=fast].on{background:var(--fast)} .kind[data-k=meal].on{background:var(--meal)}
+.readout{display:flex;align-items:baseline;justify-content:center;gap:8px;padding:6px 0 10px;min-height:84px}
+.readout .display{font-size:4.2rem;line-height:1;letter-spacing:-.02em;min-width:3.2ch;text-align:right}
+.readout .display.empty{color:var(--line)}
+.readout .unit{color:var(--ink2);font-size:1rem}
+.verdict{text-align:center;min-height:1.4rem;font-weight:800;margin-bottom:8px}
+.verdict.ok{color:var(--ok)} .verdict.hi{color:var(--meal)} .verdict.lo{color:var(--warn)}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pad button{height:64px;border-radius:18px;background:var(--paper2);font-size:1.7rem;font-weight:800;transition:transform .08s,background .08s}
+.pad button:active{transform:scale(.94);background:var(--line)}
+.pad .del{font-size:1.3rem;color:var(--ink2)}
+.meta{display:flex;gap:10px;margin:14px 0 0}
+.meta label{flex:1;display:flex;flex-direction:column;gap:4px;font-size:.8rem;color:var(--ink2);font-weight:700}
+.meta input{font:inherit;font-weight:700;font-size:1rem;padding:10px 12px;border-radius:14px;border:2px solid var(--line);background:var(--paper2);color:var(--ink);width:100%;min-width:0}
+.save{display:block;width:100%;margin-top:14px;height:62px;border-radius:20px;background:var(--ink);color:var(--paper);font-size:1.2rem;font-weight:800;letter-spacing:.01em}
+.save:disabled{opacity:.35}
+.save:active{transform:scale(.98)}
+details.more{margin-top:10px} details.more summary{list-style:none;cursor:pointer;text-align:center;color:var(--ink2);font-size:.9rem;font-weight:800;padding:8px;border-radius:12px}
+details.more summary::-webkit-details-marker{display:none} details.more[open] summary{color:var(--ink)}
+/* ---------- today strip ---------- */
+.today{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.today::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border-radius:16px;padding:10px 14px;background:var(--paper2);display:flex;flex-direction:column;align-items:center;min-width:82px}
+.chip b{font-size:1.35rem;font-family:Fraunces,serif}
+.chip span{font-size:.72rem;color:var(--ink2);font-weight:700}
+.chip.fast b{color:var(--fast)} .chip.meal b{color:var(--meal)}
+.empty{color:var(--ink2);text-align:center;padding:10px 0}
+/* ---------- chart ---------- */
+.ranges{display:flex;gap:6px;margin-bottom:10px}
+.ranges button{flex:1;padding:9px 0;border-radius:14px;background:var(--paper2);font-weight:800;font-size:.9rem}
+.ranges button.on{background:var(--ink);color:var(--paper)}
+.chartbox{position:relative;width:100%}
+.chartbox svg{width:100%;height:auto;display:block;touch-action:pan-y}
+.legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;font-size:.8rem;color:var(--ink2);margin-top:8px;font-weight:700}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:4px}
+.tip{position:absolute;transform:translate(-50%,-110%);background:var(--ink);color:var(--paper);padding:8px 12px;border-radius:12px;font-size:.85rem;white-space:nowrap;pointer-events:none;box-shadow:var(--shadow);z-index:3}
+.tip b{font-size:1.1rem;font-family:Fraunces,serif}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.stat{background:var(--paper2);border-radius:16px;padding:10px;text-align:center}
+.stat b{display:block;font-family:Fraunces,serif;font-size:1.5rem}
+.stat span{font-size:.72rem;color:var(--ink2);font-weight:700}
+.inband{margin-top:12px;background:var(--band);border-radius:16px;padding:12px 14px;font-size:.95rem}
+.inband b{font-family:Fraunces,serif;font-size:1.3rem}
+/* ---------- list ---------- */
+.day{margin:18px 0 6px;font-size:.85rem;color:var(--ink2);font-weight:800;text-transform:uppercase;letter-spacing:.06em;display:flex;justify-content:space-between}
+.row{display:flex;align-items:center;gap:12px;background:var(--white);border-radius:16px;padding:12px 14px;margin:6px 0;width:100%;text-align:left;box-shadow:var(--shadow)}
+.row .dot{width:14px;height:14px;border-radius:50%;flex:0 0 auto}
+.row .v{font-family:Fraunces,serif;font-size:1.5rem;min-width:3ch}
+.row .k{flex:1;font-size:.85rem;color:var(--ink2)}
+.row .k b{display:block;color:var(--ink);font-size:.95rem}
+.row .t{color:var(--ink2);font-size:.9rem}
+/* ---------- sheet ---------- */
+.sheet{position:fixed;inset:0;background:rgba(43,42,40,.45);display:none;align-items:flex-end;z-index:20}
+.sheet.on{display:flex}
+.sheet>div{background:var(--paper);width:100%;max-width:560px;margin:0 auto;border-radius:26px 26px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom))}
+.sheet h2{font-size:1.3rem;margin-bottom:12px}
+.btns{display:flex;gap:10px;margin-top:16px}
+.btn{flex:1;height:54px;border-radius:16px;background:var(--paper2);font-weight:800;font-size:1rem}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn.danger{background:#F6E0DB;color:var(--meal)}
+.btn.full{width:100%;margin-top:10px}
+.settings label{display:block;margin:12px 0 4px;font-size:.85rem;color:var(--ink2);font-weight:800}
+.settings input,.settings textarea{font:inherit;font-weight:700;font-size:1.05rem;padding:12px;border-radius:14px;border:2px solid var(--line);background:var(--white);color:var(--ink);width:100%}
+.settings textarea{font-family:ui-monospace,Consolas,monospace;font-size:.85rem;min-height:110px}
+.hint{font-size:.85rem;color:var(--ink2);margin:6px 0}
+/* ---------- nav ---------- */
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--white);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom);z-index:10}
+nav div{display:flex;max-width:560px;width:100%}
+nav button{flex:1;padding:10px 0 8px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.72rem;font-weight:800;color:var(--ink2)}
+nav button svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+nav button.on{color:var(--meal)}
+.toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);padding:12px 20px;border-radius:16px;font-weight:800;opacity:0;transition:.25s;z-index:30;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:#fff;padding:0} nav,header p,.ranges,.card:not(.print),.toast{display:none!important}
+  .card.print{box-shadow:none;padding:0} .wrap{max-width:100%}
+  #printhead{display:block!important}
+}
+#printhead{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Glukose Kinders</h1>
+  <p id="greet">Goeie dag</p>
+</header>
+
+<!-- ========== HOME / ADD ========== -->
+<section class="screen on" id="s-home">
+  <div class="card">
+    <h2>Nuwe lesing</h2>
+    <div class="kinds">
+      <button class="kind" data-k="fast">Vastend<small>oggend, voor ontbyt</small></button>
+      <button class="kind on" data-k="meal">Een uur na ete<small>ontbyt, middag- of aandete</small></button>
+    </div>
+    <div class="readout"><span class="display empty num" id="disp">0,0</span><span class="unit">mmol/L</span></div>
+    <div class="verdict" id="verdict"></div>
+    <div class="pad" id="pad">
+      <button>1</button><button>2</button><button>3</button>
+      <button>4</button><button>5</button><button>6</button>
+      <button>7</button><button>8</button><button>9</button>
+      <button>,</button><button>0</button><button class="del" aria-label="Vee uit">⌫</button>
+    </div>
+    <button class="save" id="save" disabled>Stoor lesing</button>
+    <details class="more">
+      <summary id="metasum">Verander datum, tyd of skryf 'n nota</summary>
+      <div class="meta">
+        <label>Datum<input type="date" id="f-date"></label>
+        <label>Tyd<input type="time" id="f-time"></label>
+      </div>
+      <div class="meta"><label>Nota (opsioneel)<input type="text" id="f-note" placeholder="bv. na pap en wors" maxlength="60"></label></div>
+    </details>
+  </div>
+
+  <div class="card">
+    <h2>Vandag</h2>
+    <div class="today" id="today"></div>
+  </div>
+</section>
+
+<!-- ========== GRAPH ========== -->
+<section class="screen" id="s-graph">
+  <div class="card print">
+    <div id="printhead"><h2>Glukose-lesings</h2><p id="printsub"></p></div>
+    <div class="ranges" id="ranges">
+      <button data-r="7" class="on">7 dae</button><button data-r="14">14 dae</button><button data-r="30">30 dae</button><button data-r="0">Alles</button>
+    </div>
+    <div class="chartbox" id="chartbox"></div>
+    <div class="legend"><span><i style="background:var(--fast)"></i>Vastend</span><span><i style="background:var(--meal)"></i>Na ete</span><span><i style="background:var(--hist)"></i>Ouer lesings</span><span><i style="background:var(--band2);border-radius:3px"></i>Teiken <span id="leg-t"></span></span></div>
+    <div class="stats" id="stats"></div>
+    <div class="inband" id="inband"></div>
+  </div>
+  <div class="card">
+    <h2>Per dag</h2>
+    <div id="daytable"></div>
+  </div>
+</section>
+
+<!-- ========== LIST ========== -->
+<section class="screen" id="s-list">
+  <div id="list"></div>
+</section>
+
+<!-- ========== MORE ========== -->
+<section class="screen" id="s-more">
+  <div class="card settings">
+    <h2>Teikens</h2>
+    <p class="hint">Die groen band op die grafiek. Jou dokter se getalle.</p>
+    <div class="meta">
+      <label>Laagste<input type="number" step="0.1" id="t-lo"></label>
+      <label>Hoogste<input type="number" step="0.1" id="t-hi"></label>
+    </div>
+    <button class="btn primary full" id="t-save">Stoor teikens</button>
+  </div>
+  <div class="card settings">
+    <h2>Vir die dokter</h2>
+    <p class="hint">Maak 'n PDF van die grafiek, of deel al jou lesings as 'n lêer.</p>
+    <button class="btn primary full" id="b-print">Grafiek as PDF (druk)</button>
+    <button class="btn full" id="b-share">Deel / stoor alle lesings (CSV)</button>
+    <button class="btn full" id="b-copy">Kopieer alle lesings as teks</button>
+  </div>
+  <div class="card settings">
+    <h2>Lesings inbring</h2>
+    <p class="hint">Kies die lêer wat jy gekry het (of jou eie rugsteun). Niks word dubbel ingebring nie.</p>
+    <button class="btn primary full" id="b-file">Bring lêer in (CSV)</button><input type="file" id="f-file" accept=".csv,text/csv,text/plain" hidden>
+    <p class="hint" style="margin-top:12px">Of plak reëls hier:</p>
+    <textarea id="imp" placeholder=""></textarea>
+    <button class="btn full" id="b-import">Bring in</button>
+  </div>
+  <div class="card settings">
+    <h2>Oor hierdie app</h2>
+    <p class="hint">Al jou lesings word net op hierdie foon gestoor — niks gaan aanlyn nie. Maak gereeld 'n kopie met "Deel / stoor alle lesings" sodat dit veilig is as die foon breek.</p>
+    <p class="hint" id="count"></p>
+  </div>
+</section>
+</div>
+
+<!-- edit sheet -->
+<div class="sheet" id="sheet"><div>
+  <h2>Verander lesing</h2>
+  <div class="kinds" id="e-kinds">
+    <button class="kind" data-k="fast">Vastend<small>voor ontbyt</small></button>
+    <button class="kind" data-k="meal">Een uur na ete<small>na 'n maaltyd</small></button>
+  </div>
+  <div class="settings">
+    <label>Waarde (mmol/L)</label><input type="number" step="0.1" id="e-v" inputmode="decimal">
+    <div class="meta"><label>Datum<input type="date" id="e-date"></label><label>Tyd<input type="time" id="e-time"></label></div>
+    <label>Nota</label><input type="text" id="e-note" maxlength="60">
+  </div>
+  <div class="btns"><button class="btn danger" id="e-del">Vee uit</button><button class="btn" id="e-cancel">Kanselleer</button><button class="btn primary" id="e-save">Stoor</button></div>
+</div></div>
+
+<nav><div>
+  <button data-s="home" class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Nuwe</button>
+  <button data-s="graph"><svg viewBox="0 0 24 24"><path d="M3 17l5-6 4 4 5-7 4 5"/></svg>Grafiek</button>
+  <button data-s="list"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Lesings</button>
+  <button data-s="more"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.5-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.5 2 1.5A7 7 0 0 0 5 12a7 7 0 0 0 .1 1.2l-2 1.5 2 3.5 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.5-2-1.5A7 7 0 0 0 19 12z"/></svg>Meer</button>
+</div></nav>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= data ================= */
+const KEY='glukose.v1', TKEY='glukose.targets';
+const fmt=n=>n.toFixed(1).replace('.',',');
+const pad2=n=>String(n).padStart(2,'0');
+const KIND={fast:'Vastend',meal:'Na ete',hist:'Ouer lesing'};
+const COL={fast:'var(--fast)',meal:'var(--meal)',hist:'var(--hist)'};
+let data=load(), targets=JSON.parse(localStorage.getItem(TKEY)||'{"lo":4.5,"hi":6}');
+function load(){
+  const raw=localStorage.getItem(KEY);
+  if(raw) return JSON.parse(raw);
+  return [];
+}
+function persist(){ data.sort((a,b)=>a.t<b.t?-1:1); localStorage.setItem(KEY,JSON.stringify(data)); renderAll(); }
+const dayOf=r=>r.t.slice(0,10);
+const AF_DAYS=['Sondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrydag','Saterdag'];
+const AF_MON=['Jan','Feb','Mrt','Apr','Mei','Jun','Jul','Aug','Sep','Okt','Nov','Des'];
+function niceDate(iso,withDay=true){const d=new Date(iso+'T00:00');return (withDay?AF_DAYS[d.getDay()]+' ':'')+d.getDate()+' '+AF_MON[d.getMonth()];}
+function shortDate(iso){const d=new Date(iso+'T00:00');return d.getDate()+' '+AF_MON[d.getMonth()];}
+function todayISO(){const d=new Date();return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function nowHM(){const d=new Date();return pad2(d.getHours())+':'+pad2(d.getMinutes());}
+function verdictOf(v){ if(v<targets.lo) return ['lo','Bietjie laag — die kinders slaap']; if(v>targets.hi) return ['hi','Bo teiken — die kinders oordryf nou']; return ['ok','Binne teiken — die kinders doen hul huiswerk ✓']; }
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove('on'),1800);}
+const $=s=>document.querySelector(s);
+
+/* ================= entry ================= */
+let entry='', kind='meal';
+const disp=$('#disp'), verdict=$('#verdict'), saveBtn=$('#save');
+function resetForm(){ entry=''; $('#f-date').value=todayISO(); $('#f-time').value=nowHM(); $('#f-note').value=''; kind=(new Date().getHours()<10)?'fast':'meal'; paintKinds(); paintEntry(); }
+function paintKinds(){document.querySelectorAll('#s-home .kind').forEach(b=>b.classList.toggle('on',b.dataset.k===kind));}
+function paintEntry(){
+  const v=parseFloat(entry.replace(',','.'));
+  if(!entry){disp.textContent='0,0';disp.classList.add('empty');verdict.textContent='';saveBtn.disabled=true;return;}
+  disp.classList.remove('empty'); disp.textContent=entry;
+  const ok=!isNaN(v)&&v>=1&&v<=35&&!entry.endsWith(',');
+  saveBtn.disabled=!ok;
+  if(ok){const [c,m]=verdictOf(v);verdict.className='verdict '+c;verdict.textContent=m;} else verdict.textContent='';
+}
+$('#pad').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  const ch=b.textContent;
+  if(b.classList.contains('del')) entry=entry.slice(0,-1);
+  else if(ch===','){ if(entry&&!entry.includes(',')) entry+=','; }
+  else { if(entry.includes(',')){ if(entry.split(',')[1].length<1) entry+=ch; } else if(entry.length<2) entry+=ch; }
+  if(navigator.vibrate) navigator.vibrate(8);
+  paintEntry();
+});
+document.querySelectorAll('#s-home .kind').forEach(b=>b.onclick=()=>{kind=b.dataset.k;paintKinds();});
+saveBtn.onclick=()=>{
+  const v=parseFloat(entry.replace(',','.')); if(isNaN(v)) return;
+  const t=$('#f-date').value+'T'+($('#f-time').value||nowHM());
+  data.push({id:Date.now().toString(36),t,v,k:kind,n:$('#f-note').value.trim()||undefined});
+  persist(); toast('Gestoor — '+fmt(v)+' mmol/L'); resetForm();
+  if(navigator.vibrate) navigator.vibrate([20,40,20]);
+};
+
+/* ================= today ================= */
+function renderToday(){
+  const el=$('#today'); const rows=data.filter(r=>dayOf(r)===todayISO());
+  $('#greet').textContent=niceDate(todayISO())+(rows.length?' · '+rows.length+(rows.length===1?' lesing':' lesings'):' · hoe gedra die kinders hulle vandag?');
+  if(!rows.length){el.innerHTML='<div class="empty" style="width:100%">Jou eerste lesing vir vandag kom hierbo in.</div>';return;}
+  el.innerHTML=rows.map(r=>`<div class="chip ${r.k}"><b class="num">${fmt(r.v)}</b><span>${r.t.slice(11)} · ${KIND[r.k]}</span></div>`).join('');
+}
+
+/* ================= chart ================= */
+let range=7;
+$('#ranges').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;range=+b.dataset.r;document.querySelectorAll('#ranges button').forEach(x=>x.classList.toggle('on',x===b));renderChart();});
+function visibleRows(){
+  if(!range) return data;
+  const days=[...new Set(data.map(dayOf))].sort().slice(-range);
+  const s=new Set(days); return data.filter(r=>s.has(dayOf(r)));
+}
+function renderChart(){
+  const box=$('#chartbox'); const rows=visibleRows();
+  $('#leg-t').textContent=fmt(targets.lo)+'–'+fmt(targets.hi);
+  if(!rows.length){box.innerHTML='<div class="empty">Nog geen lesings nie.</div>';$('#stats').innerHTML='';$('#inband').innerHTML='';$('#daytable').innerHTML='';return;}
+  const days=[...new Set(rows.map(dayOf))].sort();
+  const W=560, H=420, L=40, R=12, T=16, B=50;
+  const vals=rows.map(r=>r.v);
+  let ymin=Math.floor(Math.min(targets.lo,...vals)-0.5), ymax=Math.ceil(Math.max(targets.hi,...vals)+0.5);
+  const slot=(W-L-R)/days.length;
+  const x=r=>{const d=new Date(r.t);const f=(d.getHours()*60+d.getMinutes())/1440;return L+days.indexOf(dayOf(r))*slot+slot*(0.1+0.8*f);};
+  const y=v=>T+(ymax-v)/(ymax-ymin)*(H-T-B);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Glukose-grafiek">`;
+  s+=`<rect x="${L}" y="${y(targets.hi)}" width="${W-L-R}" height="${y(targets.lo)-y(targets.hi)}" fill="var(--band)" rx="4"/>`;
+  for(let v=ymin;v<=ymax;v++){s+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${L-6}" y="${y(v)+4}" font-size="14" font-weight="700" text-anchor="end" fill="var(--ink2)">${v}</text>`;}
+  days.forEach((d,i)=>{ const cx=L+i*slot+slot/2;
+    if(i) s+=`<line x1="${L+i*slot}" x2="${L+i*slot}" y1="${T}" y2="${H-B}" stroke="var(--line)" stroke-dasharray="2 4"/>`;
+    const show=days.length<=16||i%Math.ceil(days.length/12)===0||i===days.length-1;
+    if(show) s+=`<text x="${cx}" y="${H-B+16}" font-size="${days.length>20?11:13}" text-anchor="middle" fill="var(--ink2)" font-weight="700">${shortDate(d)}</text>`;
+    if(show&&days.length<=10) s+=`<text x="${cx}" y="${H-B+32}" font-size="11" text-anchor="middle" fill="var(--ink2)">${AF_DAYS[new Date(d+'T00:00').getDay()].slice(0,2)}</text>`;
+  });
+  s+=`<polyline fill="none" stroke="var(--ink)" stroke-opacity=".35" stroke-width="1.6" stroke-linejoin="round" points="${rows.map(r=>x(r).toFixed(1)+','+y(r.v).toFixed(1)).join(' ')}"/>`;
+  rows.forEach((r,i)=>{ const out=r.v<targets.lo||r.v>targets.hi;
+    s+=`<circle data-i="${i}" cx="${x(r).toFixed(1)}" cy="${y(r.v).toFixed(1)}" r="${days.length>20?4:6}" fill="${COL[r.k]}" stroke="${out?'var(--ink)':'var(--white)'}" stroke-width="${out?2:1.5}" style="cursor:pointer"/>`; });
+  s+=`<rect x="${L}" y="${T}" width="${W-L-R}" height="${H-T-B}" fill="transparent" id="hit"/></svg>`;
+  box.innerHTML=s;
+  const svg=box.querySelector('svg'), circles=[...svg.querySelectorAll('circle')];
+  let tip=null;
+  const showTip=(i,cx,cy)=>{ const r=rows[i]; if(tip) tip.remove(); tip=document.createElement('div'); tip.className='tip';
+    const rect=svg.getBoundingClientRect(), sx=rect.width/W;
+    tip.style.left=(cx*sx)+'px'; tip.style.top=(cy*sx)+'px';
+    tip.innerHTML=`<b class="num">${fmt(r.v)}</b> mmol/L<br>${niceDate(dayOf(r),false)} ${r.t.slice(11)} · ${KIND[r.k]}${r.n?'<br><i>'+r.n+'</i>':''}`;
+    box.appendChild(tip); clearTimeout(box._x); box._x=setTimeout(()=>{tip&&tip.remove();tip=null;},3500); };
+  const pick=ev=>{ const rect=svg.getBoundingClientRect(), sx=W/rect.width; const px=(ev.clientX-rect.left)*sx, py=(ev.clientY-rect.top)*sx;
+    let best=-1,bd=1e9; circles.forEach((c,i)=>{const d=Math.hypot(c.cx.baseVal.value-px,c.cy.baseVal.value-py);if(d<bd){bd=d;best=i;}});
+    if(best>=0&&bd<28) showTip(best,circles[best].cx.baseVal.value,circles[best].cy.baseVal.value); };
+  svg.addEventListener('pointerdown',pick);
+  // stats
+  const avg=vals.reduce((a,b)=>a+b,0)/vals.length, inb=vals.filter(v=>v>=targets.lo&&v<=targets.hi).length;
+  const fasts=rows.filter(r=>r.k==='fast').map(r=>r.v), meals=rows.filter(r=>r.k==='meal').map(r=>r.v);
+  const m=a=>a.length?fmt(a.reduce((x,y)=>x+y,0)/a.length):'–';
+  $('#stats').innerHTML=`<div class="stat"><b class="num">${fmt(avg)}</b><span>gemiddeld</span></div><div class="stat"><b class="num">${fmt(Math.min(...vals))}</b><span>laagste</span></div><div class="stat"><b class="num">${fmt(Math.max(...vals))}</b><span>hoogste</span></div>`;
+  $('#inband').innerHTML=`<b class="num">${Math.round(100*inb/vals.length)}%</b> van ${vals.length} lesings binne jou teiken${fasts.length||meals.length?`<br><span style="font-size:.85rem;color:var(--ink2)">Vastend gem. <b style="font-size:1rem;color:var(--fast)">${m(fasts)}</b> · Na ete gem. <b style="font-size:1rem;color:var(--meal)">${m(meals)}</b></span>`:''}`;
+  $('#printsub').textContent=niceDate(days[0],false)+' tot '+niceDate(days[days.length-1],false)+' · '+vals.length+' lesings · teiken '+fmt(targets.lo)+'–'+fmt(targets.hi)+' mmol/L';
+  // day table
+  const th=t=>`<th style="font-size:.72rem;color:var(--ink2);font-weight:800;text-align:center;padding:4px 0">${t}</th>`;
+  $('#daytable').innerHTML='<table style="width:100%;border-collapse:collapse;font-size:.95rem"><tr>'+th('')+th('Vastend')+th('Gemiddeld')+th('Laag – hoog')+'</tr>'+[...days].reverse().map(d=>{const dv=rows.filter(r=>dayOf(r)===d);const f=dv.find(r=>r.k==='fast');const a=dv.reduce((s,r)=>s+r.v,0)/dv.length;
+    return `<tr style="border-top:1px solid var(--line)"><td style="padding:9px 0;font-weight:800">${shortDate(d)}<br><span style="font-size:.72rem;color:var(--ink2)">${dv.length} lesings</span></td><td class="num" style="text-align:center;color:var(--fast);font-weight:800;font-size:1.05rem">${f?fmt(f.v):'–'}</td><td class="num" style="text-align:center;font-weight:800;font-size:1.05rem">${fmt(a)}</td><td class="num" style="text-align:center;font-weight:800">${fmt(Math.min(...dv.map(r=>r.v)))} – ${fmt(Math.max(...dv.map(r=>r.v)))}</td></tr>`;}).join('')+'</table>';
+}
+
+/* ================= list ================= */
+function renderList(){
+  const el=$('#list'); if(!data.length){el.innerHTML='<div class="empty">Nog geen lesings nie.</div>';return;}
+  const days=[...new Set(data.map(dayOf))].sort().reverse();
+  el.innerHTML=days.map(d=>{const rows=data.filter(r=>dayOf(r)===d).slice().reverse();
+    return `<div class="day"><span>${niceDate(d)}</span><span>${rows.length}</span></div>`+rows.map(r=>{const [c]=verdictOf(r.v);
+      return `<button class="row" data-id="${r.id}"><span class="dot" style="background:${COL[r.k]}"></span><span class="v num" style="color:${c==='ok'?'var(--ink)':c==='hi'?'var(--meal)':'var(--warn)'}">${fmt(r.v)}</span><span class="k"><b>${KIND[r.k]}</b>${r.n||''}</span><span class="t">${r.t.slice(11)}</span></button>`;}).join('');}).join('');
+}
+$('#list').addEventListener('click',e=>{const b=e.target.closest('.row');if(b)openEdit(b.dataset.id);});
+let editing=null;
+function openEdit(id){ const r=data.find(x=>x.id===id); if(!r) return; editing=r;
+  $('#e-v').value=r.v; $('#e-date').value=r.t.slice(0,10); $('#e-time').value=r.t.slice(11); $('#e-note').value=r.n||'';
+  document.querySelectorAll('#e-kinds .kind').forEach(b=>b.classList.toggle('on',b.dataset.k===r.k)); $('#sheet').classList.add('on'); }
+document.querySelectorAll('#e-kinds .kind').forEach(b=>b.onclick=()=>{editing.k=b.dataset.k;document.querySelectorAll('#e-kinds .kind').forEach(x=>x.classList.toggle('on',x===b));});
+$('#e-cancel').onclick=()=>{$('#sheet').classList.remove('on');data=load();};
+$('#e-save').onclick=()=>{const v=parseFloat($('#e-v').value);if(isNaN(v)||v<1||v>35){toast('Kyk weer na die waarde');return;}
+  editing.v=v; editing.t=$('#e-date').value+'T'+$('#e-time').value; editing.n=$('#e-note').value.trim()||undefined; if(editing.k==='hist') editing.k='meal';
+  $('#sheet').classList.remove('on'); persist(); toast('Verander');};
+$('#e-del').onclick=()=>{ if(!confirm('Hierdie lesing uitvee? ('+fmt(editing.v)+' mmol/L)')) return; data=data.filter(x=>x!==editing); $('#sheet').classList.remove('on'); persist(); toast('Uitgevee'); };
+
+/* ================= more ================= */
+function renderMore(){ $('#t-lo').value=targets.lo; $('#t-hi').value=targets.hi; $('#count').textContent=data.length+' lesings gestoor op hierdie foon.'; }
+$('#t-save').onclick=()=>{const lo=parseFloat($('#t-lo').value),hi=parseFloat($('#t-hi').value);if(isNaN(lo)||isNaN(hi)||lo>=hi){toast('Laagste moet kleiner as hoogste wees');return;}
+  targets={lo,hi}; localStorage.setItem(TKEY,JSON.stringify(targets)); renderAll(); toast('Teikens gestoor');};
+const csv=()=>'datum,tyd,glukose_mmol_L,tipe,nota\n'+data.map(r=>`${r.t.slice(0,10)},${r.t.slice(11)},${r.v},${KIND[r.k]},${(r.n||'').replace(/,/g,';')}`).join('\n');
+$('#b-print').onclick=()=>{show('graph');setTimeout(()=>window.print(),300);};
+$('#b-share').onclick=async()=>{ const name='glukose-'+todayISO()+'.csv'; const file=new File([csv()],name,{type:'text/csv'});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'Glukose-lesings'});return;}catch(e){if(e.name==='AbortError')return;}}
+  const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=name;a.click(); toast('Lêer afgelaai'); };
+$('#b-copy').onclick=async()=>{try{await navigator.clipboard.writeText(csv());toast('Gekopieer — plak dit in WhatsApp of e-pos');}catch{toast('Kon nie kopieer nie');}};
+function importText(txt){ const lines=txt.split(/\r?\n/).map(l=>l.trim()).filter(Boolean); let n=0;
+  for(const l of lines){ const m=l.match(/^(\d{4}-\d\d-\d\d)[ ,;\t]+(\d\d:\d\d)[ ,;\t]+(\d+[.,]?\d*)(?:[ ,;\t]+([^,;\t]+))?/); if(!m) continue;
+    const v=parseFloat(m[3].replace(',','.')); if(isNaN(v)) continue; const tp=m[4]||''; const k=/vast|fast/i.test(tp)?'fast':/ouer|hist/i.test(tp)?'hist':'meal';
+    if(data.some(r=>r.t===m[1]+'T'+m[2]&&r.v===v)) continue; data.push({id:Date.now().toString(36)+n,t:m[1]+'T'+m[2],v,k}); n++; }
+  if(n) persist(); toast(n?n+' lesings ingebring':lines.length?'Alles was reeds ingebring':'Niks herken nie — is dit die regte lêer?'); return n; }
+$('#b-import').onclick=()=>{ if(importText($('#imp').value)) $('#imp').value=''; };
+$('#b-file').onclick=()=>$('#f-file').click();
+$('#f-file').onchange=e=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{importText(rd.result);show('graph');}; rd.readAsText(f); e.target.value=''; };
+$('#imp').placeholder='2026-08-24 07:10 5,4 vastend\n2026-08-24 13:30 6,8';
+
+/* ================= nav ================= */
+function show(s){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('on',x.id==='s-'+s));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.s===s));window.scrollTo(0,0);if(s==='graph')renderChart();}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.s));
+function renderAll(){renderToday();renderChart();renderList();renderMore();}
+resetForm(); renderAll();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+</script>
+</body>
+</html>
