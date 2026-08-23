@@ -17,7 +17,7 @@ Name from her doctor's story: beta cells are "stout kinders" who skip their home
 - **Graph skips days with no readings** — days sit side by side, no gap. "7 dae" = last 7 days *with readings*.
 - Friendliest possible UI: keypad entry (no phone keyboard), big text, one screen to save. Base font 18px; chart drawn at true pixel width so labels stay 15–16px.
 - Dots shrink on days with >8 / >14 readings (August had 17–22/day); normal days keep big dots.
-- PDF for the doctor = one A4 page: wide chart + stats row + per-day table. Print uses its own chart geometry (`printMode`).
+- PDF for the doctor = `renderPrint()` → `#printpage`, one A4 **landscape** page in the matplotlib style she approved (blue line, white dots, per-day low–high bar + average). Prints whatever range is selected (Alles for the full month). Screen chart untouched.
 - Netlify avoided on purpose (WhenWorks eats her credits) → GitHub Pages.
 
 ## Data / privacy — the one hard rule
@@ -25,7 +25,7 @@ Name from her doctor's story: beta cells are "stout kinders" who skip their home
 
 ## Files
 - `index.html` — whole app (CSS + JS inline). Sections: entry / today / chart / list / more / install sheet / edit sheet.
-- `sw.js` — cache name `glukose-vN`. **Bump N on every change** or phones keep the old version. Currently **v6**.
+- `sw.js` — cache name `glukose-vN`. **Bump N on every change** or phones keep the old version. Currently **v7**.
 - `manifest.json`, `icons/` — PWA bits. `README.md` — short public description.
 - Storage keys: `glukose.v1` (readings array `{id,t:'YYYY-MM-DDTHH:MM',v,k:'fast'|'meal'|'hist',n?}`), `glukose.targets`, `glukose.installLater`.
 
@@ -36,7 +36,7 @@ Name from her doctor's story: beta cells are "stout kinders" who skip their home
 4. Tell her: close and reopen the app twice to pick up the new version. Readings survive updates.
 
 ## Monthly doctor's graph (her mom prefers THIS over the app's PDF)
-She likes the original matplotlib A4 landscape PDF (line graph + per-day min/max/avg strip), not the in-app print. Routine: her mom sends the CSV from *Meer → Deel / stoor alle lesings*; run `python graaf.py <die.csv>` (in this folder; band 4,5–6,0; missed days skipped) → `Desktop\Glukose_grafiek_<month>.pdf`. The in-app print can stay as is; don't spend more time on it.
+The in-app *Grafiek as PDF* now produces the same layout (v7), so the script is the fallback only. Routine if needed: her mom sends the CSV from *Meer → Deel / stoor alle lesings*; run `python graaf.py <die.csv>` (in this folder; band 4,5–6,0; missed days skipped) → `Desktop\Glukose_grafiek_<month>.pdf`. The in-app print can stay as is; don't spend more time on it.
 
 ## Pending on Megan
 - Nothing. (Optional, some day: ask her mom to send a CSV backup via *Meer → Deel / stoor alle lesings* every few weeks.)

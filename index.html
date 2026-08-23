@@ -114,20 +114,12 @@ nav button.on{color:var(--meal)}
 .toast.on{opacity:1;transform:translateX(-50%)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @media print{ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  @page{size:A4 portrait;margin:12mm}
-  html{font-size:11pt} body{background:#fff;padding:0;color:#000}
-  nav,header,.ranges,.card:not(.print),.toast,.tip,.screen:not(#s-graph){display:none!important}
-  #s-graph{display:block!important}
-  .card.print{box-shadow:none;padding:0;margin:0 0 8px;page-break-inside:avoid;break-inside:avoid}
-  .wrap{max-width:100%;padding:0}
-  #printhead{display:block!important} #printhead h2{font-size:16pt} #printhead p{margin:2px 0 6px;font-size:9.5pt;color:#444}
-  .chartbox svg{max-height:115mm;width:100%}
-  .legend{font-size:8.5pt;margin-top:2px} .stats{gap:6px;margin-top:6px} .stat{padding:4px} .stat b{font-size:12pt} .stat span{font-size:8pt}
-  .inband{margin-top:6px;padding:6px 10px;font-size:9pt} .inband b{font-size:11pt}
-  #daytable table{font-size:8.5pt} #daytable td,#daytable th{padding:2px 0!important} #daytable td br{display:none} #daytable td span{margin-left:4px}
-  .card.print h2.dh{font-size:11pt;margin:6px 0 2px}
+  @page{size:A4 landscape;margin:10mm}
+  body{background:#fff;padding:0;margin:0}
+  body>*{display:none!important} #printpage{display:block!important}
+  #printpage svg{width:100%;height:auto;max-height:185mm;display:block}
 }
-#printhead{display:none}
+#printpage{display:none}
 </style>
 </head>
 <body>
@@ -270,6 +262,7 @@ nav button.on{color:var(--meal)}
   <button data-s="list"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Lesings</button>
   <button data-s="more"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.5-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.5 2 1.5A7 7 0 0 0 5 12a7 7 0 0 0 .1 1.2l-2 1.5 2 3.5 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.5-2-1.5A7 7 0 0 0 19 12z"/></svg>Meer</button>
 </div></nav>
+<div id="printpage"></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -337,7 +330,7 @@ function renderToday(){
 }
 
 /* ================= chart ================= */
-let range=7, printMode=false;
+let range=7;
 $('#ranges').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;range=+b.dataset.r;document.querySelectorAll('#ranges button').forEach(x=>x.classList.toggle('on',x===b));renderChart();});
 function visibleRows(){
   if(!range) return data;
@@ -349,7 +342,7 @@ function renderChart(){
   $('#leg-t').textContent=fmt(targets.lo)+'–'+fmt(targets.hi);
   if(!rows.length){box.innerHTML='<div class="empty">Nog geen lesings nie.</div>';$('#stats').innerHTML='';$('#inband').innerHTML='';$('#daytable').innerHTML='';return;}
   const days=[...new Set(rows.map(dayOf))].sort();
-  const W=printMode?700:(box.clientWidth||360), H=printMode?340:Math.round(W*1.05), L=34, R=10, T=16, B=58;
+  const W=box.clientWidth||360, H=Math.round(W*1.05), L=34, R=10, T=16, B=58;
   const vals=rows.map(r=>r.v);
   let ymin=Math.floor(Math.min(targets.lo,...vals)-0.5), ymax=Math.ceil(Math.max(targets.hi,...vals)+0.5);
   const slot=(W-L-R)/days.length;
@@ -398,6 +391,46 @@ function renderChart(){
     return `<tr style="border-top:1px solid var(--line)"><td style="padding:9px 0;font-weight:800">${shortDate(d)}<br><span style="font-size:.72rem;color:var(--ink2)">${dv.length} lesings</span></td><td class="num" style="text-align:center;color:var(--fast);font-weight:800;font-size:1.05rem">${f?fmt(f.v):'–'}</td><td class="num" style="text-align:center;font-weight:800;font-size:1.05rem">${fmt(a)}</td><td class="num" style="text-align:center;font-weight:800">${fmt(Math.min(...dv.map(r=>r.v)))} – ${fmt(Math.max(...dv.map(r=>r.v)))}</td></tr>`;}).join('')+'</table>';
 }
 
+/* ================= print (matplotlib-style doctor's page) ================= */
+function renderPrint(){
+  const rows=visibleRows(); const pp=$('#printpage'); if(!rows.length){pp.innerHTML='';return;}
+  const days=[...new Set(rows.map(dayOf))].sort(), n=days.length;
+  const BLUE='#1565c0', BAND='#c8e6c9', GRID='#dddddd', GREY='#90a4ae', TXT='#222', TXT2='#555';
+  const W=1169, H=827, L=70, R=30;
+  let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif" fill="${TXT}">`;
+  s+=`<rect width="${W}" height="${H}" fill="#fff"/>`;
+  const T1=40, B1=500; const vals=rows.map(r=>r.v);
+  const ymin=Math.min(3.5,Math.floor(Math.min(...vals))-0.5), ymax=Math.max(10,Math.ceil(Math.max(...vals))+0.5);
+  const slot=(W-L-R)/n, y=v=>T1+(ymax-v)/(ymax-ymin)*(B1-T1);
+  const x=r=>{const d=new Date(r.t);return L+days.indexOf(dayOf(r))*slot+slot*(0.1+0.8*(d.getHours()*60+d.getMinutes())/1440);};
+  const dlab=d=>{const dd=new Date(d+'T00:00');return dd.getDate()+' '+AF_MON[dd.getMonth()];};
+  s+=`<text x="${W/2}" y="24" font-size="20" font-weight="bold" text-anchor="middle">Glukose-lesings — ${dlab(days[0])} tot ${dlab(days[n-1])} (${rows.length} lesings, dae sonder lesings weggelaat)</text>`;
+  s+=`<rect x="${L}" y="${y(targets.hi)}" width="${W-L-R}" height="${y(targets.lo)-y(targets.hi)}" fill="${BAND}" fill-opacity=".6"/>`;
+  for(let v=Math.ceil(ymin);v<=ymax;v++) s+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="${GRID}"/><text x="${L-10}" y="${y(v)+5}" font-size="14" text-anchor="end">${v}</text>`;
+  for(let i=1;i<n;i++) s+=`<line x1="${L+i*slot}" x2="${L+i*slot}" y1="${T1}" y2="${B1}" stroke="#bbb" stroke-dasharray="2 5"/>`;
+  s+=`<line x1="${L}" x2="${W-R}" y1="${B1}" y2="${B1}" stroke="#333"/><line x1="${L}" x2="${L}" y1="${T1}" y2="${B1}" stroke="#333"/>`;
+  days.forEach((d,i)=>s+=`<text x="${L+i*slot+slot/2}" y="${B1+22}" font-size="${n>16?11:14}" text-anchor="middle">${dlab(d)}</text>`);
+  s+=`<text transform="translate(20 ${(T1+B1)/2}) rotate(-90)" font-size="15" text-anchor="middle">Glukose (mmol/L)</text>`;
+  s+=`<polyline fill="none" stroke="${BLUE}" stroke-width="1.6" stroke-linejoin="round" points="${rows.map(r=>x(r).toFixed(1)+','+y(r.v).toFixed(1)).join(' ')}"/>`;
+  rows.forEach(r=>s+=`<circle cx="${x(r).toFixed(1)}" cy="${y(r.v).toFixed(1)}" r="3.5" fill="#fff" stroke="${BLUE}" stroke-width="1.4"/>`);
+  s+=`<rect x="${W-R-250}" y="${T1+6}" width="26" height="14" fill="${BAND}"/><text x="${W-R-218}" y="${T1+18}" font-size="13">Teiken ${fmt(targets.lo)}–${fmt(targets.hi)} mmol/L</text>`;
+  const T2=575, B2=770; const y2=v=>T2+(10-v)/(10-3.2)*(B2-T2);
+  const per=days.map(d=>rows.filter(r=>dayOf(r)===d).map(r=>r.v));
+  s+=`<text x="${W/2}" y="${T2-14}" font-size="14" text-anchor="middle">Per dag: laagste – hoogste (balk) en gemiddeld (kol)</text>`;
+  s+=`<rect x="${L}" y="${y2(targets.hi)}" width="${W-L-R}" height="${y2(targets.lo)-y2(targets.hi)}" fill="${BAND}" fill-opacity=".6"/>`;
+  for(let v=4;v<=10;v++) s+=`<line x1="${L}" x2="${W-R}" y1="${y2(v)}" y2="${y2(v)}" stroke="${GRID}"/><text x="${L-10}" y="${y2(v)+5}" font-size="14" text-anchor="end">${v}</text>`;
+  s+=`<line x1="${L}" x2="${W-R}" y1="${B2}" y2="${B2}" stroke="#333"/><line x1="${L}" x2="${L}" y1="${T2}" y2="${B2}" stroke="#333"/>`;
+  s+=`<text transform="translate(20 ${(T2+B2)/2}) rotate(-90)" font-size="15" text-anchor="middle">mmol/L</text>`;
+  per.forEach((v,i)=>{ const cx=L+i*slot+slot/2, lo=Math.min(...v), hi=Math.max(...v), av=v.reduce((a,b)=>a+b,0)/v.length;
+    s+=`<line x1="${cx}" x2="${cx}" y1="${y2(hi)}" y2="${y2(lo)}" stroke="${GREY}" stroke-width="8" stroke-opacity=".8"/>`;
+    s+=`<circle cx="${cx}" cy="${y2(av)}" r="6" fill="${BLUE}"/>`;
+    s+=`<text x="${cx}" y="${y2(hi)-6}" font-size="11" text-anchor="middle" fill="${TXT2}">${fmt(hi)}</text><text x="${cx}" y="${y2(lo)+15}" font-size="11" text-anchor="middle" fill="${TXT2}">${fmt(lo)}</text>`;
+    s+=`<text x="${cx}" y="${B2+18}" font-size="${n>16?10:12}" text-anchor="middle">${dlab(days[i])}</text><text x="${cx}" y="${B2+33}" font-size="${n>16?9:11}" text-anchor="middle" fill="${TXT2}">(${v.length} lesings)</text>`; });
+  s+=`<circle cx="${W-R-120}" cy="${T2+12}" r="6" fill="${BLUE}"/><text x="${W-R-108}" y="${T2+16}" font-size="13">Gemiddeld</text>`;
+  s+=`<text x="${W-R}" y="${H-8}" font-size="10" text-anchor="end" fill="${TXT2}">Glukose Kinders · gedruk ${niceDate(todayISO(),false)}</text>`;
+  pp.innerHTML=s+'</svg>';
+}
+
 /* ================= list ================= */
 function renderList(){
   const el=$('#list'); if(!data.length){el.innerHTML='<div class="empty">Nog geen lesings nie.</div>';return;}
@@ -424,8 +457,7 @@ $('#t-save').onclick=()=>{const lo=parseFloat($('#t-lo').value),hi=parseFloat($(
   targets={lo,hi}; localStorage.setItem(TKEY,JSON.stringify(targets)); renderAll(); toast('Teikens gestoor');};
 const csv=()=>'datum,tyd,glukose_mmol_L,tipe,nota\n'+data.map(r=>`${r.t.slice(0,10)},${r.t.slice(11)},${r.v},${KIND[r.k]},${(r.n||'').replace(/,/g,';')}`).join('\n');
 $('#b-print').onclick=()=>{show('graph');setTimeout(()=>window.print(),300);};
-window.addEventListener('beforeprint',()=>{printMode=true;renderChart();});
-window.addEventListener('afterprint',()=>{printMode=false;renderChart();});
+window.addEventListener('beforeprint',renderPrint);
 $('#b-share').onclick=async()=>{ const name='glukose-'+todayISO()+'.csv'; const file=new File([csv()],name,{type:'text/csv'});
   if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'Glukose-lesings'});return;}catch(e){if(e.name==='AbortError')return;}}
   const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=name;a.click(); toast('Lêer afgelaai'); };
