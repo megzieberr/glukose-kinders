@@ -358,8 +358,11 @@ function renderChart(){
     if(i===0||d.slice(0,7)!==days[i-1].slice(0,7)) s+=`<text x="${L+i*slot+3}" y="${H-B+50}" font-size="12" text-anchor="start" fill="var(--ink2)" font-weight="700">${AF_MON[dd.getMonth()]} ${dd.getFullYear()}</text>`;
   });
   s+=`<polyline fill="none" stroke="var(--ink)" stroke-opacity=".35" stroke-width="1.6" stroke-linejoin="round" points="${rows.map(r=>x(r).toFixed(1)+','+y(r.v).toFixed(1)).join(' ')}"/>`;
+  const perDay={}; rows.forEach(r=>{perDay[dayOf(r)]=(perDay[dayOf(r)]||0)+1;});
+  const base=days.length>20?4:days.length>10?5:7;
+  const rad=r=>{const n=perDay[dayOf(r)]; return n>14?Math.max(2.5,base-3):n>8?Math.max(3.5,base-1.5):base;};
   rows.forEach((r,i)=>{ const out=r.v<targets.lo||r.v>targets.hi;
-    s+=`<circle data-i="${i}" cx="${x(r).toFixed(1)}" cy="${y(r.v).toFixed(1)}" r="${days.length>20?4:days.length>10?5:7}" fill="${COL[r.k]}" stroke="${out?'var(--ink)':'var(--white)'}" stroke-width="${out?2:1.5}" style="cursor:pointer"/>`; });
+    s+=`<circle data-i="${i}" cx="${x(r).toFixed(1)}" cy="${y(r.v).toFixed(1)}" r="${rad(r)}" fill="${COL[r.k]}" stroke="${out?'var(--ink)':'var(--white)'}" stroke-width="${out?2:1.5}" style="cursor:pointer"/>`; });
   s+=`<rect x="${L}" y="${T}" width="${W-L-R}" height="${H-T-B}" fill="transparent" id="hit"/></svg>`;
   box.innerHTML=s;
   const svg=box.querySelector('svg'), circles=[...svg.querySelectorAll('circle')];
