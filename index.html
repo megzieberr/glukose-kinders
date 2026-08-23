@@ -19,7 +19,7 @@
   --r:22px; --shadow:0 4px 18px rgba(60,40,20,.10);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{font-size:17px}
+html{font-size:18px}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:600;line-height:1.35;
   padding-bottom:calc(84px + env(safe-area-inset-bottom))}
 h1,h2,.display{font-family:Fraunces,Georgia,serif;font-weight:700;margin:0}
@@ -63,7 +63,7 @@ details.more summary::-webkit-details-marker{display:none} details.more[open] su
 .today::-webkit-scrollbar{display:none}
 .chip{flex:0 0 auto;border-radius:16px;padding:10px 14px;background:var(--paper2);display:flex;flex-direction:column;align-items:center;min-width:82px}
 .chip b{font-size:1.35rem;font-family:Fraunces,serif}
-.chip span{font-size:.72rem;color:var(--ink2);font-weight:700}
+.chip span{font-size:.8rem;color:var(--ink2);font-weight:700}
 .chip.fast b{color:var(--fast)} .chip.meal b{color:var(--meal)}
 .empty{color:var(--ink2);text-align:center;padding:10px 0}
 /* ---------- chart ---------- */
@@ -72,14 +72,14 @@ details.more summary::-webkit-details-marker{display:none} details.more[open] su
 .ranges button.on{background:var(--ink);color:var(--paper)}
 .chartbox{position:relative;width:100%}
 .chartbox svg{width:100%;height:auto;display:block;touch-action:pan-y}
-.legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;font-size:.8rem;color:var(--ink2);margin-top:8px;font-weight:700}
+.legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;font-size:.95rem;color:var(--ink2);margin-top:8px;font-weight:700}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:4px}
-.tip{position:absolute;transform:translate(-50%,-110%);background:var(--ink);color:var(--paper);padding:8px 12px;border-radius:12px;font-size:.85rem;white-space:nowrap;pointer-events:none;box-shadow:var(--shadow);z-index:3}
-.tip b{font-size:1.1rem;font-family:Fraunces,serif}
+.tip{position:absolute;transform:translate(-50%,-110%);background:var(--ink);color:var(--paper);padding:10px 14px;border-radius:14px;font-size:1rem;line-height:1.35;white-space:nowrap;pointer-events:none;box-shadow:var(--shadow);z-index:3}
+.tip b{font-size:1.4rem;font-family:Fraunces,serif}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
 .stat{background:var(--paper2);border-radius:16px;padding:10px;text-align:center}
 .stat b{display:block;font-family:Fraunces,serif;font-size:1.5rem}
-.stat span{font-size:.72rem;color:var(--ink2);font-weight:700}
+.stat span{font-size:.85rem;color:var(--ink2);font-weight:700}
 .inband{margin-top:12px;background:var(--band);border-radius:16px;padding:12px 14px;font-size:.95rem}
 .inband b{font-family:Fraunces,serif;font-size:1.3rem}
 /* ---------- list ---------- */
@@ -210,6 +210,11 @@ nav button.on{color:var(--meal)}
     <textarea id="imp" placeholder=""></textarea>
     <button class="btn full" id="b-import">Bring in</button>
   </div>
+  <div class="card settings" id="card-install">
+    <h2>Op jou tuisskerm</h2>
+    <p class="hint">Sit die app tussen jou ander apps sodat jy dit met een tik oopmaak.</p>
+    <button class="btn primary full" id="b-install" style="display:none">Installeer op my foon</button>
+  </div>
   <div class="card settings">
     <h2>Oor hierdie app</h2>
     <p class="hint">Al jou lesings word net op hierdie foon gestoor — niks gaan aanlyn nie. Maak gereeld 'n kopie met "Deel / stoor alle lesings" sodat dit veilig is as die foon breek.</p>
@@ -217,6 +222,23 @@ nav button.on{color:var(--meal)}
   </div>
 </section>
 </div>
+
+<!-- install sheet -->
+<div class="sheet" id="inst"><div>
+  <h2>Sit die app op jou foon</h2>
+  <p class="hint" id="inst-text" style="font-size:1rem">Dan is daar 'n ikoon op jou tuisskerm, net soos WhatsApp — en dit werk sonder internet.</p>
+  <ol class="hint" id="inst-ios" style="display:none;font-size:1rem;padding-left:22px;line-height:1.6">
+    <li>Tik die <b>Deel</b>-knoppie onder (die blokkie met die pyltjie op).</li>
+    <li>Kies <b>Add to Home Screen</b>.</li>
+    <li>Tik <b>Add</b>.</li>
+  </ol>
+  <ol class="hint" id="inst-manual" style="display:none;font-size:1rem;padding-left:22px;line-height:1.6">
+    <li>Tik die <b>⋮</b> knoppie regs bo.</li>
+    <li>Kies <b>Add to Home screen</b> of <b>Install app</b>.</li>
+    <li>Tik <b>Add</b>.</li>
+  </ol>
+  <div class="btns"><button class="btn" id="inst-later">Later</button><button class="btn primary" id="inst-go">Installeer</button></div>
+</div></div>
 
 <!-- edit sheet -->
 <div class="sheet" id="sheet"><div>
@@ -318,7 +340,7 @@ function renderChart(){
   $('#leg-t').textContent=fmt(targets.lo)+'–'+fmt(targets.hi);
   if(!rows.length){box.innerHTML='<div class="empty">Nog geen lesings nie.</div>';$('#stats').innerHTML='';$('#inband').innerHTML='';$('#daytable').innerHTML='';return;}
   const days=[...new Set(rows.map(dayOf))].sort();
-  const W=560, H=420, L=40, R=12, T=16, B=50;
+  const W=box.clientWidth||360, H=Math.round(W*1.05), L=34, R=10, T=16, B=58;
   const vals=rows.map(r=>r.v);
   let ymin=Math.floor(Math.min(targets.lo,...vals)-0.5), ymax=Math.ceil(Math.max(targets.hi,...vals)+0.5);
   const slot=(W-L-R)/days.length;
@@ -326,25 +348,27 @@ function renderChart(){
   const y=v=>T+(ymax-v)/(ymax-ymin)*(H-T-B);
   let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Glukose-grafiek">`;
   s+=`<rect x="${L}" y="${y(targets.hi)}" width="${W-L-R}" height="${y(targets.lo)-y(targets.hi)}" fill="var(--band)" rx="4"/>`;
-  for(let v=ymin;v<=ymax;v++){s+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${L-6}" y="${y(v)+4}" font-size="14" font-weight="700" text-anchor="end" fill="var(--ink2)">${v}</text>`;}
+  for(let v=ymin;v<=ymax;v++){s+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${L-6}" y="${y(v)+4}" font-size="15" font-weight="700" text-anchor="end" fill="var(--ink2)">${v}</text>`;}
   days.forEach((d,i)=>{ const cx=L+i*slot+slot/2;
     if(i) s+=`<line x1="${L+i*slot}" x2="${L+i*slot}" y1="${T}" y2="${H-B}" stroke="var(--line)" stroke-dasharray="2 4"/>`;
-    const show=days.length<=16||i%Math.ceil(days.length/12)===0||i===days.length-1;
-    if(show) s+=`<text x="${cx}" y="${H-B+16}" font-size="${days.length>20?11:13}" text-anchor="middle" fill="var(--ink2)" font-weight="700">${shortDate(d)}</text>`;
-    if(show&&days.length<=10) s+=`<text x="${cx}" y="${H-B+32}" font-size="11" text-anchor="middle" fill="var(--ink2)">${AF_DAYS[new Date(d+'T00:00').getDay()].slice(0,2)}</text>`;
+    const show=days.length<=8||i%Math.ceil(days.length/6)===0||i===days.length-1;
+    const dd=new Date(d+'T00:00');
+    if(show) s+=`<text x="${cx}" y="${H-B+18}" font-size="${days.length>20?12:16}" text-anchor="middle" fill="var(--ink)" font-weight="800">${dd.getDate()}</text>`;
+    if(show&&days.length<=10) s+=`<text x="${cx}" y="${H-B+34}" font-size="12" text-anchor="middle" fill="var(--ink2)">${AF_DAYS[dd.getDay()].slice(0,2)}</text>`;
+    if(i===0||d.slice(0,7)!==days[i-1].slice(0,7)) s+=`<text x="${L+i*slot+3}" y="${H-B+50}" font-size="12" text-anchor="start" fill="var(--ink2)" font-weight="700">${AF_MON[dd.getMonth()]} ${dd.getFullYear()}</text>`;
   });
   s+=`<polyline fill="none" stroke="var(--ink)" stroke-opacity=".35" stroke-width="1.6" stroke-linejoin="round" points="${rows.map(r=>x(r).toFixed(1)+','+y(r.v).toFixed(1)).join(' ')}"/>`;
   rows.forEach((r,i)=>{ const out=r.v<targets.lo||r.v>targets.hi;
-    s+=`<circle data-i="${i}" cx="${x(r).toFixed(1)}" cy="${y(r.v).toFixed(1)}" r="${days.length>20?4:6}" fill="${COL[r.k]}" stroke="${out?'var(--ink)':'var(--white)'}" stroke-width="${out?2:1.5}" style="cursor:pointer"/>`; });
+    s+=`<circle data-i="${i}" cx="${x(r).toFixed(1)}" cy="${y(r.v).toFixed(1)}" r="${days.length>20?4:days.length>10?5:7}" fill="${COL[r.k]}" stroke="${out?'var(--ink)':'var(--white)'}" stroke-width="${out?2:1.5}" style="cursor:pointer"/>`; });
   s+=`<rect x="${L}" y="${T}" width="${W-L-R}" height="${H-T-B}" fill="transparent" id="hit"/></svg>`;
   box.innerHTML=s;
   const svg=box.querySelector('svg'), circles=[...svg.querySelectorAll('circle')];
   let tip=null;
   const showTip=(i,cx,cy)=>{ const r=rows[i]; if(tip) tip.remove(); tip=document.createElement('div'); tip.className='tip';
     const rect=svg.getBoundingClientRect(), sx=rect.width/W;
-    tip.style.left=(cx*sx)+'px'; tip.style.top=(cy*sx)+'px';
     tip.innerHTML=`<b class="num">${fmt(r.v)}</b> mmol/L<br>${niceDate(dayOf(r),false)} ${r.t.slice(11)} · ${KIND[r.k]}${r.n?'<br><i>'+r.n+'</i>':''}`;
-    box.appendChild(tip); clearTimeout(box._x); box._x=setTimeout(()=>{tip&&tip.remove();tip=null;},3500); };
+    box.appendChild(tip); const half=tip.offsetWidth/2, bw=box.clientWidth; tip.style.left=Math.min(bw-half,Math.max(half,cx*sx))+'px'; tip.style.top=Math.max(cy*sx,tip.offsetHeight+6)+'px';
+    clearTimeout(box._x); box._x=setTimeout(()=>{tip&&tip.remove();tip=null;},3500); };
   const pick=ev=>{ const rect=svg.getBoundingClientRect(), sx=W/rect.width; const px=(ev.clientX-rect.left)*sx, py=(ev.clientY-rect.top)*sx;
     let best=-1,bd=1e9; circles.forEach((c,i)=>{const d=Math.hypot(c.cx.baseVal.value-px,c.cy.baseVal.value-py);if(d<bd){bd=d;best=i;}});
     if(best>=0&&bd<28) showTip(best,circles[best].cx.baseVal.value,circles[best].cy.baseVal.value); };
@@ -405,9 +429,29 @@ $('#imp').placeholder='2026-08-24 07:10 5,4 vastend\n2026-08-24 13:30 6,8';
 /* ================= nav ================= */
 function show(s){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('on',x.id==='s-'+s));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.s===s));window.scrollTo(0,0);if(s==='graph')renderChart();}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.s));
+window.addEventListener('resize',()=>{if($('#s-graph').classList.contains('on'))renderChart();});
 function renderAll(){renderToday();renderChart();renderList();renderMore();}
 resetForm(); renderAll();
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+
+/* ================= install ================= */
+let installEvt=null;
+const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+const IKEY='glukose.installLater';
+function openInstall(){
+  const manual=!installEvt&&!isIOS;
+  $('#inst-ios').style.display=isIOS?'block':'none';
+  $('#inst-manual').style.display=manual?'block':'none';
+  $('#inst-go').style.display=installEvt?'':'none';
+  $('#inst').classList.add('on');
+}
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); installEvt=e; $('#b-install').style.display=''; if(!standalone&&!localStorage.getItem(IKEY)) openInstall(); });
+window.addEventListener('appinstalled',()=>{ $('#inst').classList.remove('on'); $('#b-install').style.display='none'; toast('Geïnstalleer — kyk op jou tuisskerm'); });
+$('#inst-go').onclick=async()=>{ if(!installEvt) return; installEvt.prompt(); const r=await installEvt.userChoice; installEvt=null; if(r.outcome!=='accepted') localStorage.setItem(IKEY,'1'); $('#inst').classList.remove('on'); };
+$('#inst-later').onclick=()=>{ localStorage.setItem(IKEY,'1'); $('#inst').classList.remove('on'); };
+$('#b-install').onclick=openInstall;
+if(!standalone) { $('#b-install').style.display=''; if(isIOS&&!localStorage.getItem(IKEY)) setTimeout(openInstall,1500); }
 </script>
 </body>
 </html>
