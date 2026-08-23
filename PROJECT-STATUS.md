@@ -36,7 +36,7 @@ Name from her doctor's story: beta cells are "stout kinders" who skip their home
 4. Tell her: close and reopen the app twice to pick up the new version. Readings survive updates.
 
 ## Monthly doctor's graph (her mom prefers THIS over the app's PDF)
-She likes the original matplotlib A4 landscape PDF (line graph + per-day min/max/avg strip), not the in-app print. Routine: her mom sends the CSV from *Meer → Deel / stoor alle lesings*; run the matplotlib script (session 2026-08-23, reads `glukose-aug2026.csv`; band 4,5–6,0; x = day slots so missed days are skipped) → `Desktop\Glukose_grafiek_<month>.pdf`. The in-app print can stay as is; don't spend more time on it.
+She likes the original matplotlib A4 landscape PDF (line graph + per-day min/max/avg strip), not the in-app print. Routine: her mom sends the CSV from *Meer → Deel / stoor alle lesings*; run `python graaf.py <die.csv>` (in this folder; band 4,5–6,0; missed days skipped) → `Desktop\Glukose_grafiek_<month>.pdf`. The in-app print can stay as is; don't spend more time on it.
 
 ## Pending on Megan
 - Nothing. (Optional, some day: ask her mom to send a CSV backup via *Meer → Deel / stoor alle lesings* every few weeks.)
