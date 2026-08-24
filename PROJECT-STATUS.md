@@ -23,7 +23,7 @@ Name from her doctor's story: beta cells are "stout kinders" who skip their home
 - Netlify avoided on purpose (WhenWorks eats her credits) → GitHub Pages.
 
 ## Data / privacy — the one hard rule
-**No readings ever go into the repo.** `*.csv` is gitignored. Her August 2026 history lives only in `Desktop\glukose-aug2026.csv` (139 readings, duplicates already removed), sent to her mom by WhatsApp and loaded via *Meer → Bring lêer in (CSV)*. Import de-duplicates on date+time+value, so re-importing is safe. Imported August rows are kind `hist` ("Ouer lesings", grey).
+**No readings ever go into the repo.** `*.csv` is gitignored. Her August 2026 history was in `Desktop\glukose-aug2026.csv` (139 readings, duplicates already removed) — **that file went to the Recycle Bin with the old Desktop folder on 2026-08-24** and is only recoverable until the bin is emptied; her mom still has the data on her phone plus the WhatsApped copy. The app folder now lives at `Desktop\Claude Code Projects\glukose-app` (fresh clone). Import stays *Meer → Bring lêer in (CSV)*. Import de-duplicates on date+time+value, so re-importing is safe. Imported August rows are kind `hist` ("Ouer lesings", grey).
 
 ## Files
 - `index.html` — whole app (CSS + JS inline). Sections: entry / today / chart / list / more / install sheet / edit sheet.
@@ -42,7 +42,8 @@ Name from her doctor's story: beta cells are "stout kinders" who skip their home
 The in-app *Grafiek as PDF* now produces the same layout (v7), so the script is the fallback only. Routine if needed: her mom sends the CSV from *Meer → Deel / stoor alle lesings*; run `python graaf.py <die.csv>` (in this folder; band 4,5–6,0; missed days skipped) → `Desktop\Glukose_grafiek_<month>.pdf`. The in-app print can stay as is; don't spend more time on it.
 
 ## Pending on Megan
-- Nothing. (Optional, some day: ask her mom to send a CSV backup via *Meer → Deel / stoor alle lesings* every few weeks.)
+- 💻 1 min **[whenever]**: if the binned `glukose-aug2026.csv` wasn't meant to go, restore it from the Recycle Bin before emptying — after that her mom's phone + WhatsApp are the only copies.
+- (Optional, some day: ask her mom to send a CSV backup via *Meer → Deel / stoor alle lesings* every few weeks.)
 
 ## Ideas not built (only on her say-so)
 - Weekly summary line ("hierdie week: gem. 5,8, 80% binne teiken").
