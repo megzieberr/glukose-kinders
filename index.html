@@ -70,9 +70,14 @@ details.more summary::-webkit-details-marker{display:none} details.more[open] su
 .chip.fast b{color:var(--fast)} .chip.meal b{color:var(--meal)}
 .empty{color:var(--ink2);text-align:center;padding:10px 0}
 /* ---------- chart ---------- */
-.ranges{display:flex;gap:6px;margin-bottom:10px}
-.ranges button{flex:1;padding:9px 0;border-radius:14px;background:var(--paper2);font-weight:800;font-size:.9rem}
+.ranges{display:flex;gap:5px;margin-bottom:10px}
+.ranges button{flex:1;padding:9px 1px;border-radius:14px;background:var(--paper2);font-weight:800;font-size:.82rem;white-space:nowrap}
 .ranges button.on{background:var(--ink);color:var(--paper)}
+.daynav{display:flex;align-items:center;gap:8px;margin:-2px 0 10px}
+.daynav[hidden]{display:none}
+.daynav button{width:46px;padding:6px 0;border-radius:14px;background:var(--paper2);font-weight:800;font-size:1.45rem;line-height:1.1}
+.daynav button:disabled{opacity:.28}
+.daynav b{flex:1;text-align:center;font-family:Fraunces,serif;font-size:1rem;white-space:nowrap}
 .chartbox{position:relative;width:100%}
 .chartbox svg{width:100%;height:auto;display:block;touch-action:pan-y}
 .legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;font-size:.95rem;color:var(--ink2);margin-top:8px;font-weight:700}
@@ -174,8 +179,9 @@ nav button.on{color:var(--meal)}
   <div class="card print">
     <div id="printhead"><h2>Glukose-lesings</h2><p id="printsub"></p></div>
     <div class="ranges" id="ranges">
-      <button data-r="7" class="on">7 dae</button><button data-r="14">14 dae</button><button data-r="30">30 dae</button><button data-r="0">Alles</button>
+      <button data-r="1">1 dag</button><button data-r="7" class="on">7 dae</button><button data-r="14">14 dae</button><button data-r="30">30 dae</button><button data-r="0">Alles</button>
     </div>
+    <div class="daynav" id="daynav" hidden><button id="dayprev" aria-label="Vorige dag">‹</button><b id="daylabel"></b><button id="daynext" aria-label="Volgende dag">›</button></div>
     <div class="chartbox" id="chartbox"></div>
     <div class="legend"><span><i style="background:var(--fast)"></i>Voor ete</span><span><i style="background:var(--meal)"></i>Na ete</span><span><i style="background:var(--hist)"></i>Ouer lesings</span><span><i style="background:var(--band2);border-radius:3px"></i>Teiken <span id="leg-t"></span></span></div>
     <div class="stats" id="stats"></div>
@@ -350,28 +356,49 @@ function renderToday(){
 }
 
 /* ================= chart ================= */
-let range=7;
-$('#ranges').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;range=+b.dataset.r;document.querySelectorAll('#ranges button').forEach(x=>x.classList.toggle('on',x===b));renderChart();});
+let range=7, oneDay=null;
+const allDays=()=>[...new Set(data.map(dayOf))].sort();
+$('#ranges').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;range=+b.dataset.r;
+  if(range===1){const d=allDays(); if(!d.length)oneDay=null; else if(!oneDay||!d.includes(oneDay))oneDay=d[d.length-1];}
+  document.querySelectorAll('#ranges button').forEach(x=>x.classList.toggle('on',x===b));renderChart();});
+function stepDay(n){const d=allDays(), i=d.indexOf(oneDay); if(i<0)return; const j=i+n; if(j<0||j>=d.length)return; oneDay=d[j]; renderChart();}
+$('#dayprev').onclick=()=>stepDay(-1);
+$('#daynext').onclick=()=>stepDay(1);
+function syncDayNav(){
+  const nav=$('#daynav'); if(range!==1){nav.hidden=true;return;}
+  const d=allDays(); if(oneDay&&!d.includes(oneDay))oneDay=d.length?d[d.length-1]:null;
+  nav.hidden=false; const i=d.indexOf(oneDay);
+  $('#daylabel').textContent=oneDay?niceDate(oneDay):'–';
+  $('#dayprev').disabled=i<=0; $('#daynext').disabled=i<0||i>=d.length-1;
+}
 function visibleRows(){
+  if(range===1) return oneDay?data.filter(r=>dayOf(r)===oneDay):[];
   if(!range) return data;
-  const days=[...new Set(data.map(dayOf))].sort().slice(-range);
+  const days=allDays().slice(-range);
   const s=new Set(days); return data.filter(r=>s.has(dayOf(r)));
 }
 function renderChart(){
-  const box=$('#chartbox'); const rows=visibleRows();
+  const box=$('#chartbox'); syncDayNav(); const rows=visibleRows();
+  const ONE=range===1;
   $('#leg-t').textContent=fmt(targets.lo)+'–'+fmt(targets.hi);
   if(!rows.length){box.innerHTML='<div class="empty">Nog geen lesings nie.</div>';$('#stats').innerHTML='';$('#inband').innerHTML='';$('#daytable').innerHTML='';return;}
   const days=[...new Set(rows.map(dayOf))].sort();
-  const W=box.clientWidth||360, H=Math.round(W*1.05), L=34, R=10, T=16, B=58;
+  const W=box.clientWidth||360, H=Math.round(W*(ONE?0.9:1.05)), L=34, R=10, T=16, B=ONE?40:58;
   const vals=rows.map(r=>r.v);
   let ymin=Math.floor(Math.min(targets.lo,...vals)-0.5), ymax=Math.ceil(Math.max(targets.hi,...vals)+0.5);
   const slot=(W-L-R)/days.length;
-  const x=r=>{const d=new Date(r.t);const f=(d.getHours()*60+d.getMinutes())/1440;return L+days.indexOf(dayOf(r))*slot+slot*(0.1+0.8*f);};
+  const PAD=6, hx=h=>L+PAD+(h/24)*(W-L-R-2*PAD);
+  const x=r=>{const d=new Date(r.t);const f=(d.getHours()*60+d.getMinutes())/1440;
+    return ONE?hx(f*24):L+days.indexOf(dayOf(r))*slot+slot*(0.1+0.8*f);};
   const y=v=>T+(ymax-v)/(ymax-ymin)*(H-T-B);
   let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Glukose-grafiek">`;
   s+=`<rect x="${L}" y="${y(targets.hi)}" width="${W-L-R}" height="${y(targets.lo)-y(targets.hi)}" fill="var(--band)" rx="4"/>`;
   for(let v=ymin;v<=ymax;v++){s+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${L-6}" y="${y(v)+4}" font-size="15" font-weight="700" text-anchor="end" fill="var(--ink2)">${v}</text>`;}
-  days.forEach((d,i)=>{ const cx=L+i*slot+slot/2;
+  if(ONE){ for(let h=0;h<=24;h+=3){ const cx=hx(h);
+      if(h>0&&h<24) s+=`<line x1="${cx}" x2="${cx}" y1="${T}" y2="${H-B}" stroke="var(--line)" stroke-dasharray="2 4"/>`;
+      if(h===6||h===12||h===18) s+=`<text x="${cx}" y="${H-B+20}" font-size="15" text-anchor="middle" fill="var(--ink)" font-weight="800">${pad2(h)}:00</text>`; }
+    s+=`<text x="${(L+W-R)/2}" y="${H-B+36}" font-size="12" text-anchor="middle" fill="var(--ink2)" font-weight="700">uur van die dag</text>`;
+  } else days.forEach((d,i)=>{ const cx=L+i*slot+slot/2;
     if(i) s+=`<line x1="${L+i*slot}" x2="${L+i*slot}" y1="${T}" y2="${H-B}" stroke="var(--line)" stroke-dasharray="2 4"/>`;
     const show=days.length<=8||i%Math.ceil(days.length/6)===0||i===days.length-1;
     const dd=new Date(d+'T00:00');
@@ -382,7 +409,8 @@ function renderChart(){
   s+=`<polyline fill="none" stroke="var(--ink)" stroke-opacity=".35" stroke-width="1.6" stroke-linejoin="round" points="${rows.map(r=>x(r).toFixed(1)+','+y(r.v).toFixed(1)).join(' ')}"/>`;
   const perDay={}; rows.forEach(r=>{perDay[dayOf(r)]=(perDay[dayOf(r)]||0)+1;});
   const base=days.length>20?4:days.length>10?5:7;
-  const rad=r=>{const n=perDay[dayOf(r)]; return n>14?Math.max(2.5,base-3):n>8?Math.max(3.5,base-1.5):base;};
+  const rad=r=>{ if(ONE) return rows.length>16?5.5:7;
+    const n=perDay[dayOf(r)]; return n>14?Math.max(2.5,base-3):n>8?Math.max(3.5,base-1.5):base;};
   rows.forEach((r,i)=>{ const out=r.v<targets.lo||r.v>targets.hi;
     s+=`<circle data-i="${i}" cx="${x(r).toFixed(1)}" cy="${y(r.v).toFixed(1)}" r="${rad(r)}" fill="${COL[r.k]}" stroke="${out?'var(--ink)':'var(--white)'}" stroke-width="${out?2:1.5}" style="cursor:pointer"/>`; });
   s+=`<rect x="${L}" y="${T}" width="${W-L-R}" height="${H-T-B}" fill="transparent" id="hit"/></svg>`;
@@ -404,7 +432,7 @@ function renderChart(){
   const m=a=>a.length?fmt(a.reduce((x,y)=>x+y,0)/a.length):'–';
   $('#stats').innerHTML=`<div class="stat"><b class="num">${fmt(avg)}</b><span>gemiddeld</span></div><div class="stat"><b class="num">${fmt(Math.min(...vals))}</b><span>laagste</span></div><div class="stat"><b class="num">${fmt(Math.max(...vals))}</b><span>hoogste</span></div>`;
   $('#inband').innerHTML=`<b class="num">${Math.round(100*inb/vals.length)}%</b> van ${vals.length} lesings binne jou teiken${fasts.length||meals.length?`<br><span style="font-size:.85rem;color:var(--ink2)">Voor ete gem. <b style="font-size:1rem;color:var(--fast)">${m(fasts)}</b> · Na ete gem. <b style="font-size:1rem;color:var(--meal)">${m(meals)}</b></span>`:''}`;
-  $('#printsub').textContent=niceDate(days[0],false)+' tot '+niceDate(days[days.length-1],false)+' · '+vals.length+' lesings · teiken '+fmt(targets.lo)+'–'+fmt(targets.hi)+' mmol/L';
+  $('#printsub').textContent=(days.length===1?niceDate(days[0]):niceDate(days[0],false)+' tot '+niceDate(days[days.length-1],false))+' · '+vals.length+' lesings · teiken '+fmt(targets.lo)+'–'+fmt(targets.hi)+' mmol/L';
   // day table
   const th=t=>`<th style="font-size:.72rem;color:var(--ink2);font-weight:800;text-align:center;padding:4px 0">${t}</th>`;
   $('#daytable').innerHTML='<table style="width:100%;border-collapse:collapse;font-size:.95rem"><tr>'+th('')+th('Voor ete')+th('Gemiddeld')+th('Laag – hoog')+'</tr>'+[...days].reverse().map(d=>{const dv=rows.filter(r=>dayOf(r)===d);const f=dv.find(r=>r.k==='fast');const a=dv.reduce((s,r)=>s+r.v,0)/dv.length;
@@ -421,15 +449,21 @@ function renderPrint(){
   s+=`<rect width="${W}" height="${H}" fill="#fff"/>`;
   const T1=40, B1=500; const vals=rows.map(r=>r.v);
   const ymin=Math.min(3.5,Math.floor(Math.min(...vals))-0.5), ymax=Math.max(10,Math.ceil(Math.max(...vals))+0.5);
+  const ONE=n===1;
   const slot=(W-L-R)/n, y=v=>T1+(ymax-v)/(ymax-ymin)*(B1-T1);
-  const x=r=>{const d=new Date(r.t);return L+days.indexOf(dayOf(r))*slot+slot*(0.1+0.8*(d.getHours()*60+d.getMinutes())/1440);};
+  const hx=h=>L+20+(h/24)*(W-L-R-40);
+  const x=r=>{const d=new Date(r.t);const f=(d.getHours()*60+d.getMinutes())/1440;
+    return ONE?hx(f*24):L+days.indexOf(dayOf(r))*slot+slot*(0.1+0.8*f);};
   const dlab=d=>{const dd=new Date(d+'T00:00');return dd.getDate()+' '+AF_MON[dd.getMonth()];};
-  s+=`<text x="${W/2}" y="24" font-size="20" font-weight="bold" text-anchor="middle">Glukose-lesings — ${dlab(days[0])} tot ${dlab(days[n-1])} (${rows.length} lesings, dae sonder lesings weggelaat)</text>`;
+  s+=`<text x="${W/2}" y="24" font-size="20" font-weight="bold" text-anchor="middle">${ONE?`Glukose-lesings — ${niceDate(days[0])} (${rows.length} lesings)`:`Glukose-lesings — ${dlab(days[0])} tot ${dlab(days[n-1])} (${rows.length} lesings, dae sonder lesings weggelaat)`}</text>`;
   s+=`<rect x="${L}" y="${y(targets.hi)}" width="${W-L-R}" height="${y(targets.lo)-y(targets.hi)}" fill="${BAND}" fill-opacity=".6"/>`;
   for(let v=Math.ceil(ymin);v<=ymax;v++) s+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="${GRID}"/><text x="${L-10}" y="${y(v)+5}" font-size="14" text-anchor="end">${v}</text>`;
-  for(let i=1;i<n;i++) s+=`<line x1="${L+i*slot}" x2="${L+i*slot}" y1="${T1}" y2="${B1}" stroke="#bbb" stroke-dasharray="2 5"/>`;
+  if(ONE){ for(let h=3;h<24;h+=3) s+=`<line x1="${hx(h)}" x2="${hx(h)}" y1="${T1}" y2="${B1}" stroke="#bbb" stroke-dasharray="2 5"/>`; }
+  else for(let i=1;i<n;i++) s+=`<line x1="${L+i*slot}" x2="${L+i*slot}" y1="${T1}" y2="${B1}" stroke="#bbb" stroke-dasharray="2 5"/>`;
   s+=`<line x1="${L}" x2="${W-R}" y1="${B1}" y2="${B1}" stroke="#333"/><line x1="${L}" x2="${L}" y1="${T1}" y2="${B1}" stroke="#333"/>`;
-  days.forEach((d,i)=>s+=`<text x="${L+i*slot+slot/2}" y="${B1+22}" font-size="${n>16?11:14}" text-anchor="middle">${dlab(d)}</text>`);
+  if(ONE){ for(let h=0;h<=24;h+=3) s+=`<text x="${hx(h)}" y="${B1+22}" font-size="14" text-anchor="${h===0?'start':h===24?'end':'middle'}">${pad2(h)}:00</text>`;
+    s+=`<text x="${(L+W-R)/2}" y="${B1+42}" font-size="13" fill="${TXT2}" text-anchor="middle">uur van die dag</text>`; }
+  else days.forEach((d,i)=>s+=`<text x="${L+i*slot+slot/2}" y="${B1+22}" font-size="${n>16?11:14}" text-anchor="middle">${dlab(d)}</text>`);
   s+=`<text transform="translate(20 ${(T1+B1)/2}) rotate(-90)" font-size="15" text-anchor="middle">Glukose (mmol/L)</text>`;
   s+=`<polyline fill="none" stroke="${BLUE}" stroke-width="1.6" stroke-linejoin="round" points="${rows.map(r=>x(r).toFixed(1)+','+y(r.v).toFixed(1)).join(' ')}"/>`;
   rows.forEach(r=>s+=`<circle cx="${x(r).toFixed(1)}" cy="${y(r.v).toFixed(1)}" r="3.5" fill="#fff" stroke="${BLUE}" stroke-width="1.4"/>`);
