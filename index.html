@@ -53,6 +53,9 @@ header p{margin:2px 0 0;color:var(--ink2);font-size:.95rem}
 .meta{display:flex;gap:10px;margin:14px 0 0}
 .meta label{flex:1;display:flex;flex-direction:column;gap:4px;font-size:.8rem;color:var(--ink2);font-weight:700}
 .meta input{font:inherit;font-weight:700;font-size:1rem;padding:10px 12px;border-radius:14px;border:2px solid var(--line);background:var(--paper2);color:var(--ink);width:100%;min-width:0}
+.tags{display:flex;gap:10px;margin-top:14px}
+.tags button{flex:1;padding:10px 8px;border-radius:14px;border:2px solid var(--line);background:var(--paper2);font-weight:800;font-size:.95rem;color:var(--ink2);transition:transform .12s}
+.tags button.on{background:var(--band);border-color:var(--band2);color:var(--ink);transform:scale(1.02)}
 .save{display:block;width:100%;margin-top:14px;height:62px;border-radius:20px;background:var(--ink);color:var(--paper);font-size:1.2rem;font-weight:800;letter-spacing:.01em}
 .save:disabled{opacity:.35}
 .save:active{transform:scale(.98)}
@@ -134,7 +137,7 @@ nav button.on{color:var(--meal)}
   <div class="card">
     <h2>Nuwe lesing</h2>
     <div class="kinds">
-      <button class="kind" data-k="fast">Vastend<small>oggend, voor ontbyt</small></button>
+      <button class="kind" data-k="fast">Voor ete<small>oggend, voor ontbyt</small></button>
       <button class="kind on" data-k="meal">Een uur na ete<small>ontbyt, middag- of aandete</small></button>
     </div>
     <div class="readout"><span class="display empty num" id="disp">0,0</span><span class="unit">mmol/L</span></div>
@@ -144,6 +147,10 @@ nav button.on{color:var(--meal)}
       <button>4</button><button>5</button><button>6</button>
       <button>7</button><button>8</button><button>9</button>
       <button>,</button><button>0</button><button class="del" aria-label="Vee uit">⌫</button>
+    </div>
+    <div class="tags" id="tags">
+      <button data-g="koffie">☕ Koffie</button>
+      <button data-g="medisyne">💊 Nuwe medisyne</button>
     </div>
     <button class="save" id="save" disabled>Stoor lesing</button>
     <details class="more">
@@ -170,7 +177,7 @@ nav button.on{color:var(--meal)}
       <button data-r="7" class="on">7 dae</button><button data-r="14">14 dae</button><button data-r="30">30 dae</button><button data-r="0">Alles</button>
     </div>
     <div class="chartbox" id="chartbox"></div>
-    <div class="legend"><span><i style="background:var(--fast)"></i>Vastend</span><span><i style="background:var(--meal)"></i>Na ete</span><span><i style="background:var(--hist)"></i>Ouer lesings</span><span><i style="background:var(--band2);border-radius:3px"></i>Teiken <span id="leg-t"></span></span></div>
+    <div class="legend"><span><i style="background:var(--fast)"></i>Voor ete</span><span><i style="background:var(--meal)"></i>Na ete</span><span><i style="background:var(--hist)"></i>Ouer lesings</span><span><i style="background:var(--band2);border-radius:3px"></i>Teiken <span id="leg-t"></span></span></div>
     <div class="stats" id="stats"></div>
     <div class="inband" id="inband"></div>
   </div>
@@ -245,7 +252,7 @@ nav button.on{color:var(--meal)}
 <div class="sheet" id="sheet"><div>
   <h2>Verander lesing</h2>
   <div class="kinds" id="e-kinds">
-    <button class="kind" data-k="fast">Vastend<small>voor ontbyt</small></button>
+    <button class="kind" data-k="fast">Voor ete<small>voor ontbyt</small></button>
     <button class="kind" data-k="meal">Een uur na ete<small>na 'n maaltyd</small></button>
   </div>
   <div class="settings">
@@ -270,7 +277,9 @@ nav button.on{color:var(--meal)}
 const KEY='glukose.v1', TKEY='glukose.targets';
 const fmt=n=>n.toFixed(1).replace('.',',');
 const pad2=n=>String(n).padStart(2,'0');
-const KIND={fast:'Vastend',meal:'Na ete',hist:'Ouer lesing'};
+const KIND={fast:'Voor ete',meal:'Na ete',hist:'Ouer lesing'};
+const NICONS=[[/koffie|coffee/i,'☕'],[/medisyne|medikasie|pil/i,'💊']];
+const icos=r=>NICONS.filter(([re])=>re.test(r.n||'')).map(([,e])=>e).join('');
 const COL={fast:'var(--fast)',meal:'var(--meal)',hist:'var(--hist)'};
 let data=load(), targets=JSON.parse(localStorage.getItem(TKEY)||'{"lo":4.5,"hi":6}');
 function load(){
@@ -293,7 +302,11 @@ const $=s=>document.querySelector(s);
 /* ================= entry ================= */
 let entry='', kind='meal';
 const disp=$('#disp'), verdict=$('#verdict'), saveBtn=$('#save');
-function resetForm(){ entry=''; $('#f-date').value=todayISO(); $('#f-time').value=nowHM(); $('#f-note').value=''; kind=(new Date().getHours()<10)?'fast':'meal'; paintKinds(); paintEntry(); }
+let tags=new Set();
+const TAGWORD={koffie:'Koffie',medisyne:'Nuwe medisyne'};
+function paintTags(){document.querySelectorAll('#tags button').forEach(b=>b.classList.toggle('on',tags.has(b.dataset.g)));}
+document.querySelectorAll('#tags button').forEach(b=>b.onclick=()=>{const g=b.dataset.g;tags.has(g)?tags.delete(g):tags.add(g);paintTags();if(navigator.vibrate)navigator.vibrate(8);});
+function resetForm(){ entry=''; $('#f-date').value=todayISO(); $('#f-time').value=nowHM(); $('#f-note').value=''; tags.clear(); paintTags(); kind=(new Date().getHours()<10)?'fast':'meal'; paintKinds(); paintEntry(); }
 function paintKinds(){document.querySelectorAll('#s-home .kind').forEach(b=>b.classList.toggle('on',b.dataset.k===kind));}
 function paintEntry(){
   const v=parseFloat(entry.replace(',','.'));
@@ -316,7 +329,8 @@ document.querySelectorAll('#s-home .kind').forEach(b=>b.onclick=()=>{kind=b.data
 saveBtn.onclick=()=>{
   const v=parseFloat(entry.replace(',','.')); if(isNaN(v)) return;
   const t=$('#f-date').value+'T'+($('#f-time').value||nowHM());
-  data.push({id:Date.now().toString(36),t,v,k:kind,n:$('#f-note').value.trim()||undefined});
+  const note=[...tags].map(g=>TAGWORD[g]).concat($('#f-note').value.trim()||[]).join(' · ')||undefined;
+  data.push({id:Date.now().toString(36),t,v,k:kind,n:note});
   persist(); toast('Gestoor — '+fmt(v)+' mmol/L'); resetForm();
   if(navigator.vibrate) navigator.vibrate([20,40,20]);
 };
@@ -326,7 +340,7 @@ function renderToday(){
   const el=$('#today'); const rows=data.filter(r=>dayOf(r)===todayISO());
   $('#greet').textContent=niceDate(todayISO())+(rows.length?' · '+rows.length+(rows.length===1?' lesing':' lesings'):' · hoe gedra die kinders hulle vandag?');
   if(!rows.length){el.innerHTML='<div class="empty" style="width:100%">Jou eerste lesing vir vandag kom hierbo in.</div>';return;}
-  el.innerHTML=rows.map(r=>`<div class="chip ${r.k}"><b class="num">${fmt(r.v)}</b><span>${r.t.slice(11)} · ${KIND[r.k]}</span></div>`).join('');
+  el.innerHTML=rows.map(r=>{const ic=icos(r);return `<div class="chip ${r.k}"><b class="num">${fmt(r.v)}</b><span>${r.t.slice(11)} · ${KIND[r.k]}${ic?' '+ic:''}</span></div>`;}).join('');
 }
 
 /* ================= chart ================= */
@@ -371,7 +385,7 @@ function renderChart(){
   let tip=null;
   const showTip=(i,cx,cy)=>{ const r=rows[i]; if(tip) tip.remove(); tip=document.createElement('div'); tip.className='tip';
     const rect=svg.getBoundingClientRect(), sx=rect.width/W;
-    tip.innerHTML=`<b class="num">${fmt(r.v)}</b> mmol/L<br>${niceDate(dayOf(r),false)} ${r.t.slice(11)} · ${KIND[r.k]}${r.n?'<br><i>'+r.n+'</i>':''}`;
+    tip.innerHTML=`<b class="num">${fmt(r.v)}</b> mmol/L<br>${niceDate(dayOf(r),false)} ${r.t.slice(11)} · ${KIND[r.k]}${r.n?'<br>'+(icos(r)?icos(r)+' ':'')+'<i>'+r.n+'</i>':''}`;
     box.appendChild(tip); const half=tip.offsetWidth/2, bw=box.clientWidth; tip.style.left=Math.min(bw-half,Math.max(half,cx*sx))+'px'; tip.style.top=Math.max(cy*sx,tip.offsetHeight+6)+'px';
     clearTimeout(box._x); box._x=setTimeout(()=>{tip&&tip.remove();tip=null;},3500); };
   const pick=ev=>{ const rect=svg.getBoundingClientRect(), sx=W/rect.width; const px=(ev.clientX-rect.left)*sx, py=(ev.clientY-rect.top)*sx;
@@ -383,11 +397,11 @@ function renderChart(){
   const fasts=rows.filter(r=>r.k==='fast').map(r=>r.v), meals=rows.filter(r=>r.k==='meal').map(r=>r.v);
   const m=a=>a.length?fmt(a.reduce((x,y)=>x+y,0)/a.length):'–';
   $('#stats').innerHTML=`<div class="stat"><b class="num">${fmt(avg)}</b><span>gemiddeld</span></div><div class="stat"><b class="num">${fmt(Math.min(...vals))}</b><span>laagste</span></div><div class="stat"><b class="num">${fmt(Math.max(...vals))}</b><span>hoogste</span></div>`;
-  $('#inband').innerHTML=`<b class="num">${Math.round(100*inb/vals.length)}%</b> van ${vals.length} lesings binne jou teiken${fasts.length||meals.length?`<br><span style="font-size:.85rem;color:var(--ink2)">Vastend gem. <b style="font-size:1rem;color:var(--fast)">${m(fasts)}</b> · Na ete gem. <b style="font-size:1rem;color:var(--meal)">${m(meals)}</b></span>`:''}`;
+  $('#inband').innerHTML=`<b class="num">${Math.round(100*inb/vals.length)}%</b> van ${vals.length} lesings binne jou teiken${fasts.length||meals.length?`<br><span style="font-size:.85rem;color:var(--ink2)">Voor ete gem. <b style="font-size:1rem;color:var(--fast)">${m(fasts)}</b> · Na ete gem. <b style="font-size:1rem;color:var(--meal)">${m(meals)}</b></span>`:''}`;
   $('#printsub').textContent=niceDate(days[0],false)+' tot '+niceDate(days[days.length-1],false)+' · '+vals.length+' lesings · teiken '+fmt(targets.lo)+'–'+fmt(targets.hi)+' mmol/L';
   // day table
   const th=t=>`<th style="font-size:.72rem;color:var(--ink2);font-weight:800;text-align:center;padding:4px 0">${t}</th>`;
-  $('#daytable').innerHTML='<table style="width:100%;border-collapse:collapse;font-size:.95rem"><tr>'+th('')+th('Vastend')+th('Gemiddeld')+th('Laag – hoog')+'</tr>'+[...days].reverse().map(d=>{const dv=rows.filter(r=>dayOf(r)===d);const f=dv.find(r=>r.k==='fast');const a=dv.reduce((s,r)=>s+r.v,0)/dv.length;
+  $('#daytable').innerHTML='<table style="width:100%;border-collapse:collapse;font-size:.95rem"><tr>'+th('')+th('Voor ete')+th('Gemiddeld')+th('Laag – hoog')+'</tr>'+[...days].reverse().map(d=>{const dv=rows.filter(r=>dayOf(r)===d);const f=dv.find(r=>r.k==='fast');const a=dv.reduce((s,r)=>s+r.v,0)/dv.length;
     return `<tr style="border-top:1px solid var(--line)"><td style="padding:9px 0;font-weight:800">${shortDate(d)}<br><span style="font-size:.72rem;color:var(--ink2)">${dv.length} lesings</span></td><td class="num" style="text-align:center;color:var(--fast);font-weight:800;font-size:1.05rem">${f?fmt(f.v):'–'}</td><td class="num" style="text-align:center;font-weight:800;font-size:1.05rem">${fmt(a)}</td><td class="num" style="text-align:center;font-weight:800">${fmt(Math.min(...dv.map(r=>r.v)))} – ${fmt(Math.max(...dv.map(r=>r.v)))}</td></tr>`;}).join('')+'</table>';
 }
 
@@ -437,7 +451,8 @@ function renderList(){
   const days=[...new Set(data.map(dayOf))].sort().reverse();
   el.innerHTML=days.map(d=>{const rows=data.filter(r=>dayOf(r)===d).slice().reverse();
     return `<div class="day"><span>${niceDate(d)}</span><span>${rows.length}</span></div>`+rows.map(r=>{const [c]=verdictOf(r.v);
-      return `<button class="row" data-id="${r.id}"><span class="dot" style="background:${COL[r.k]}"></span><span class="v num" style="color:${c==='ok'?'var(--ink)':c==='hi'?'var(--meal)':'var(--warn)'}">${fmt(r.v)}</span><span class="k"><b>${KIND[r.k]}</b>${r.n||''}</span><span class="t">${r.t.slice(11)}</span></button>`;}).join('');}).join('');
+      const ic=icos(r);
+      return `<button class="row" data-id="${r.id}"><span class="dot" style="background:${COL[r.k]}"></span><span class="v num" style="color:${c==='ok'?'var(--ink)':c==='hi'?'var(--meal)':'var(--warn)'}">${fmt(r.v)}</span><span class="k"><b>${KIND[r.k]}${ic?' <span style="font-size:1.05rem">'+ic+'</span>':''}</b>${r.n||''}</span><span class="t">${r.t.slice(11)}</span></button>`;}).join('');}).join('');
 }
 $('#list').addEventListener('click',e=>{const b=e.target.closest('.row');if(b)openEdit(b.dataset.id);});
 let editing=null;
@@ -463,14 +478,14 @@ $('#b-share').onclick=async()=>{ const name='glukose-'+todayISO()+'.csv'; const 
   const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=name;a.click(); toast('Lêer afgelaai'); };
 $('#b-copy').onclick=async()=>{try{await navigator.clipboard.writeText(csv());toast('Gekopieer — plak dit in WhatsApp of e-pos');}catch{toast('Kon nie kopieer nie');}};
 function importText(txt){ const lines=txt.split(/\r?\n/).map(l=>l.trim()).filter(Boolean); let n=0;
-  for(const l of lines){ const m=l.match(/^(\d{4}-\d\d-\d\d)[ ,;\t]+(\d\d:\d\d)[ ,;\t]+(\d+[.,]?\d*)(?:[ ,;\t]+([^,;\t]+))?/); if(!m) continue;
-    const v=parseFloat(m[3].replace(',','.')); if(isNaN(v)) continue; const tp=m[4]||''; const k=/vast|fast/i.test(tp)?'fast':/ouer|hist/i.test(tp)?'hist':'meal';
-    if(data.some(r=>r.t===m[1]+'T'+m[2]&&r.v===v)) continue; data.push({id:Date.now().toString(36)+n,t:m[1]+'T'+m[2],v,k}); n++; }
+  for(const l of lines){ const m=l.match(/^(\d{4}-\d\d-\d\d)[ ,;\t]+(\d\d:\d\d)[ ,;\t]+(\d+[.,]?\d*)(?:[ ,;\t]+([^,;\t]+))?(?:[ ,;\t]+(.+))?/); if(!m) continue;
+    const v=parseFloat(m[3].replace(',','.')); if(isNaN(v)) continue; const tp=m[4]||''; const k=/vast|fast|voor/i.test(tp)?'fast':/ouer|hist/i.test(tp)?'hist':'meal';
+    if(data.some(r=>r.t===m[1]+'T'+m[2]&&r.v===v)) continue; data.push({id:Date.now().toString(36)+n,t:m[1]+'T'+m[2],v,k,n:(m[5]||'').trim()||undefined}); n++; }
   if(n) persist(); toast(n?n+' lesings ingebring':lines.length?'Alles was reeds ingebring':'Niks herken nie — is dit die regte lêer?'); return n; }
 $('#b-import').onclick=()=>{ if(importText($('#imp').value)) $('#imp').value=''; };
 $('#b-file').onclick=()=>$('#f-file').click();
 $('#f-file').onchange=e=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{importText(rd.result);show('graph');}; rd.readAsText(f); e.target.value=''; };
-$('#imp').placeholder='2026-08-24 07:10 5,4 vastend\n2026-08-24 13:30 6,8';
+$('#imp').placeholder='2026-08-24 07:10 5,4 voor ete\n2026-08-24 13:30 6,8';
 
 /* ================= nav ================= */
 function show(s){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('on',x.id==='s-'+s));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.s===s));window.scrollTo(0,0);if(s==='graph')renderChart();}
