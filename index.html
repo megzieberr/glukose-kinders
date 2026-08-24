@@ -137,7 +137,7 @@ nav button.on{color:var(--meal)}
   <div class="card">
     <h2>Nuwe lesing</h2>
     <div class="kinds">
-      <button class="kind" data-k="fast">Voor ete<small>oggend, voor ontbyt</small></button>
+      <button class="kind" data-k="fast">Voor ete<small>voor 'n maaltyd</small></button>
       <button class="kind on" data-k="meal">Een uur na ete<small>ontbyt, middag- of aandete</small></button>
     </div>
     <div class="readout"><span class="display empty num" id="disp">0,0</span><span class="unit">mmol/L</span></div>
@@ -252,7 +252,7 @@ nav button.on{color:var(--meal)}
 <div class="sheet" id="sheet"><div>
   <h2>Verander lesing</h2>
   <div class="kinds" id="e-kinds">
-    <button class="kind" data-k="fast">Voor ete<small>voor ontbyt</small></button>
+    <button class="kind" data-k="fast">Voor ete<small>voor 'n maaltyd</small></button>
     <button class="kind" data-k="meal">Een uur na ete<small>na 'n maaltyd</small></button>
   </div>
   <div class="settings">
@@ -298,6 +298,12 @@ function nowHM(){const d=new Date();return pad2(d.getHours())+':'+pad2(d.getMinu
 function verdictOf(v){ if(v<targets.lo) return ['lo','Bietjie laag — die kinders slaap']; if(v>targets.hi) return ['hi','Bo teiken — die kinders oordryf nou']; return ['ok','Binne teiken — die kinders doen hul huiswerk ✓']; }
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove('on'),1800);}
 const $=s=>document.querySelector(s);
+
+/* phone back button closes an open sheet instead of leaving the app */
+let sheetOpen=null;
+function openSheet(id){ sheetOpen=id; $(id).classList.add('on'); history.pushState({sheet:1},''); }
+function closeSheet(id){ $(id).classList.remove('on'); if(sheetOpen===id){ sheetOpen=null; if(history.state&&history.state.sheet) history.back(); } }
+window.addEventListener('popstate',()=>{ if(sheetOpen){ $(sheetOpen).classList.remove('on'); sheetOpen=null; } });
 
 /* ================= entry ================= */
 let entry='', kind='meal';
@@ -458,13 +464,13 @@ $('#list').addEventListener('click',e=>{const b=e.target.closest('.row');if(b)op
 let editing=null;
 function openEdit(id){ const r=data.find(x=>x.id===id); if(!r) return; editing=r;
   $('#e-v').value=r.v; $('#e-date').value=r.t.slice(0,10); $('#e-time').value=r.t.slice(11); $('#e-note').value=r.n||'';
-  document.querySelectorAll('#e-kinds .kind').forEach(b=>b.classList.toggle('on',b.dataset.k===r.k)); $('#sheet').classList.add('on'); }
+  document.querySelectorAll('#e-kinds .kind').forEach(b=>b.classList.toggle('on',b.dataset.k===r.k)); openSheet('#sheet'); }
 document.querySelectorAll('#e-kinds .kind').forEach(b=>b.onclick=()=>{editing.k=b.dataset.k;document.querySelectorAll('#e-kinds .kind').forEach(x=>x.classList.toggle('on',x===b));});
-$('#e-cancel').onclick=()=>{$('#sheet').classList.remove('on');data=load();};
+$('#e-cancel').onclick=()=>{closeSheet('#sheet');data=load();};
 $('#e-save').onclick=()=>{const v=parseFloat($('#e-v').value);if(isNaN(v)||v<1||v>35){toast('Kyk weer na die waarde');return;}
   editing.v=v; editing.t=$('#e-date').value+'T'+$('#e-time').value; editing.n=$('#e-note').value.trim()||undefined; if(editing.k==='hist') editing.k='meal';
-  $('#sheet').classList.remove('on'); persist(); toast('Verander');};
-$('#e-del').onclick=()=>{ if(!confirm('Hierdie lesing uitvee? ('+fmt(editing.v)+' mmol/L)')) return; data=data.filter(x=>x!==editing); $('#sheet').classList.remove('on'); persist(); toast('Uitgevee'); };
+  closeSheet('#sheet'); persist(); toast('Verander');};
+$('#e-del').onclick=()=>{ if(!confirm('Hierdie lesing uitvee? ('+fmt(editing.v)+' mmol/L)')) return; data=data.filter(x=>x!==editing); closeSheet('#sheet'); persist(); toast('Uitgevee'); };
 
 /* ================= more ================= */
 function renderMore(){ $('#t-lo').value=targets.lo; $('#t-hi').value=targets.hi; $('#count').textContent=data.length+' lesings gestoor op hierdie foon.'; }
@@ -505,12 +511,12 @@ function openInstall(){
   $('#inst-ios').style.display=isIOS?'block':'none';
   $('#inst-manual').style.display=manual?'block':'none';
   $('#inst-go').style.display=installEvt?'':'none';
-  $('#inst').classList.add('on');
+  openSheet('#inst');
 }
 window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); installEvt=e; $('#b-install').style.display=''; if(!standalone&&!localStorage.getItem(IKEY)) openInstall(); });
-window.addEventListener('appinstalled',()=>{ $('#inst').classList.remove('on'); $('#b-install').style.display='none'; toast('Geïnstalleer — kyk op jou tuisskerm'); });
-$('#inst-go').onclick=async()=>{ if(!installEvt) return; installEvt.prompt(); const r=await installEvt.userChoice; installEvt=null; if(r.outcome!=='accepted') localStorage.setItem(IKEY,'1'); $('#inst').classList.remove('on'); };
-$('#inst-later').onclick=()=>{ localStorage.setItem(IKEY,'1'); $('#inst').classList.remove('on'); };
+window.addEventListener('appinstalled',()=>{ closeSheet('#inst'); $('#b-install').style.display='none'; toast('Geïnstalleer — kyk op jou tuisskerm'); });
+$('#inst-go').onclick=async()=>{ if(!installEvt) return; installEvt.prompt(); const r=await installEvt.userChoice; installEvt=null; if(r.outcome!=='accepted') localStorage.setItem(IKEY,'1'); closeSheet('#inst'); };
+$('#inst-later').onclick=()=>{ localStorage.setItem(IKEY,'1'); closeSheet('#inst'); };
 $('#b-install').onclick=openInstall;
 if(!standalone) { $('#b-install').style.display=''; if(isIOS&&!localStorage.getItem(IKEY)) setTimeout(openInstall,1500); }
 </script>
