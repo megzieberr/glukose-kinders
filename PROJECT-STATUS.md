@@ -1,6 +1,6 @@
 # Glukose Kinders — PROJECT STATUS
 
-**Last session:** 2026-08-24 (mom's feedback rounds: "Voor ete" rename + note icons; then any-time-of-day label + back-button fix, sw v9)
+**Last session:** 2026-08-24 (mom's feedback rounds: "Voor ete" rename + note icons; any-time-of-day label + back-button fix; then the one-day graph view, sw v10)
 **Live:** https://megzieberr.github.io/glukose-kinders/ (GitHub Pages, repo `megzieberr/glukose-kinders`, PUBLIC)
 **Installed on:** Megan's mom's phone (Brave, Android) — via the browser menu "Add to home screen"
 
@@ -16,6 +16,7 @@ Name from her doctor's story: beta cells are "stout kinders" who skip their home
 - Two kinds only: **Voor ete** (before ANY meal, any time of day — her mom's ruling later on 2026-08-24; button small-text says "voor 'n maaltyd"; renamed from "Vastend" earlier that day — internal key stays `fast`) and **Een uur na ete** (the default; still auto-picks Voor ete before 10:00 as a convenience, only the label changed).
 - Phone back button (2026-08-24): with the edit or install sheet open, back CLOSES the sheet instead of leaving the app (history.pushState on open, popstate closes; button-closes call history.back() to keep the stack clean).
 - Notes with icons (2026-08-24, her mom's ask): ☕ Koffie and 💊 Nuwe medisyne tap-buttons on the entry form append those words to the note; icons are derived from the note TEXT (koffie/coffee → ☕, medisyne/medikasie/pil → 💊) and show on the Vandag chips, the Lesings list and the chart tooltip. "Note didn't save" was investigated: notes always saved, they were just invisible on the home screen — no data loss.
+- **One day at a time** (2026-08-24, her mom's ask): a **"1 dag"** button first in the range row, plus a `‹ Donderdag 20 Aug ›` bar that steps through days *with readings* (arrows disable at the oldest/newest day; the bar only shows in 1-dag mode). In that view the x-axis becomes **hours of the day** — labels 06:00/12:00/18:00, faint grid every 3 h — and dots stay large. Stats, the in-target line and the per-day table all follow the selection, and *Grafiek as PDF* prints the single day with a full 00:00–24:00 axis. Midnight labels are deliberately left off the phone chart: five time labels crowd each other at 360 px.
 - **Graph skips days with no readings** — days sit side by side, no gap. "7 dae" = last 7 days *with readings*.
 - Friendliest possible UI: keypad entry (no phone keyboard), big text, one screen to save. Base font 18px; chart drawn at true pixel width so labels stay 15–16px.
 - Dots shrink on days with >8 / >14 readings (August had 17–22/day); normal days keep big dots.
@@ -27,7 +28,7 @@ Name from her doctor's story: beta cells are "stout kinders" who skip their home
 
 ## Files
 - `index.html` — whole app (CSS + JS inline). Sections: entry / today / chart / list / more / install sheet / edit sheet.
-- `sw.js` — cache name `glukose-vN`. **Bump N on every change** or phones keep the old version. Currently **v9**.
+- `sw.js` — cache name `glukose-vN`. **Bump N on every change** or phones keep the old version. Currently **v10**.
 - CSV import now also reads the `nota` column (was dropped before 2026-08-24) and maps tipe "Voor ete" back to `fast`.
 - `manifest.json`, `icons/` — PWA bits. `README.md` — short public description.
 - Storage keys: `glukose.v1` (readings array `{id,t:'YYYY-MM-DDTHH:MM',v,k:'fast'|'meal'|'hist',n?}`), `glukose.targets`, `glukose.installLater`.
