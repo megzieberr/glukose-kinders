@@ -1,6 +1,6 @@
 # Glukose Kinders — PROJECT STATUS
 
-**Last session:** 2026-08-25 (food logging with a 58-icon pack, a feeling chip, and a whole new **Meal Plan** tab: time-aware meals, swap list, shopping list, weekly feedback export — sw v11)
+**Last session:** 2026-08-25 (sw v11 shipped: 58-icon food logging + feeling chip + Meal Plan tab. Afternoon: label verdicts for her products, two WhatsApp rule-cards on the Desktop, and the “Is dit reg?” checker SPEC'd — see `PLAN-is-dit-reg.md`, build not started)
 **Live:** https://megzieberr.github.io/glukose-kinders/ (GitHub Pages, repo `megzieberr/glukose-kinders`, PUBLIC)
 **Installed on:** Megan's mom's phone (Brave, Android) — via the browser menu "Add to home screen"
 
@@ -30,6 +30,7 @@ Name from her doctor's story: beta cells are "stout kinders" who skip their home
   - 23 meal options, each with a one-line reason and a 👍/👎 she can tap (saved in `glukose.planfb`).
   - *Die vier reëls*, a 10-item **Ruil om** swap list, and an **Inkopielys** with tick-off items (`glukose.shop`) plus a share button that lists only what is NOT yet ticked.
   - *Stuur my week vir Megan* → a .txt with the last 7 days of readings + food + feelings + which meals she liked + her free-text note. That is the feedback loop: her mom exports, Megan sends it here, the plan gets updated.
+- **Photo-AI “yay/nay” scanner DECLINED** (Fable design ruling, accepted 2026-08-25): needs a paid key that can't live in a public repo, a binary verdict is the wrong shape (real answers are “yes, IF…”), and it kills the label-reading skill. Approved instead: the typed three-number **“Is dit reg?” checker** — full spec + rule table + test fixtures in `PLAN-is-dit-reg.md`. Barcode auto-fill is a v2 candidate only.
 - **Plan content is food-only, on purpose** (her ruling 2026-08-25): no diagnosis, no medicine names, no personal details anywhere in the repo. The medical reasoning behind the plan (why certain proteins were chosen, why there are no-appetite options, the product notes, the questions for the doctor) lives OUTSIDE the repo, in `Desktop\glukose-mamma-notas.md`. Keep it that way.
 
 ## Data / privacy — the one hard rule
@@ -58,6 +59,7 @@ The in-app *Grafiek as PDF* now produces the same layout (v7), so the script is 
 - (Optional, some day: ask her mom to send a CSV backup via *Meer → Deel / stoor alle lesings* every few weeks.)
 
 ## Next up
+- **Build the “Is dit reg?” checker** from `PLAN-is-dit-reg.md` (one card on Meal Plan, no storage, sw → v12; fixtures in the plan are the Playwright tests). Routine, well-scoped — Sonnet can take it end-to-end.
 - After ~2 weeks of food logging: rank her real meals by what they did to her (the app will have the data — show "hierdie ontbyt: gem. 6,1 na ete" next to each plan option). This was always the point of the icons.
 - Her mom exports her week from the Meal Plan tab → Megan sends the .txt here → the plan gets adjusted to what she actually liked and what actually worked.
 - Still open: nothing in the plan yet accounts for what a dietitian might change. The reasoning file on the Desktop is the thing to hand to the doctor at the follow-up.
