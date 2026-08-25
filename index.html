@@ -56,6 +56,53 @@ header p{margin:2px 0 0;color:var(--ink2);font-size:.95rem}
 .tags{display:flex;gap:10px;margin-top:14px}
 .tags button{flex:1;padding:10px 8px;border-radius:14px;border:2px solid var(--line);background:var(--paper2);font-weight:800;font-size:.95rem;color:var(--ink2);transition:transform .12s}
 .tags button.on{background:var(--band);border-color:var(--band2);color:var(--ink);transform:scale(1.02)}
+/* ---------- food + feeling ---------- */
+.foodwrap{margin-top:16px}
+.foodwrap>label{display:block;font-size:.8rem;color:var(--ink2);font-weight:800;margin-bottom:4px}
+.foodbox{display:flex;align-items:center;gap:8px;border:2px solid var(--line);background:var(--paper2);border-radius:14px;padding:4px 10px}
+.foodbox input{flex:1;min-width:0;font:inherit;font-weight:700;font-size:1rem;padding:8px 0;border:0;background:none;color:var(--ink)}
+.foodbox input:focus{outline:none}
+.foodbox .ics{font-size:1.35rem;line-height:1;letter-spacing:1px;white-space:nowrap}
+.pickbtn{width:100%;margin-top:8px;padding:9px;border-radius:14px;background:var(--paper2);font-weight:800;font-size:.9rem;color:var(--ink2)}
+.pickbtn.on{background:var(--ink);color:var(--paper)}
+.grid{display:none;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;max-height:320px;overflow-y:auto;padding:2px}
+.grid.on{display:grid}
+.grid button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 2px;min-height:74px;border-radius:14px;background:var(--paper2);border:2px solid transparent;line-height:1.1}
+.grid button i{font-style:normal;font-size:1.5rem}
+.grid button span{font-size:.68rem;font-weight:800;color:var(--ink2);text-align:center;overflow-wrap:break-word;hyphens:auto}
+.grid button.on{background:var(--band);border-color:var(--band2)}
+.grid button.on span{color:var(--ink)}
+.moods{display:flex;gap:8px;margin-top:14px}
+.moods button{flex:1;padding:9px 4px;border-radius:14px;background:var(--paper2);border:2px solid transparent;display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.1}
+.moods button i{font-style:normal;font-size:1.5rem}
+.moods button span{font-size:.7rem;font-weight:800;color:var(--ink2)}
+nav button[data-s=plan]{font-size:.63rem;letter-spacing:-.01em}
+.moods button.on{background:var(--band);border-color:var(--band2)}
+.moods button.on span{color:var(--ink)}
+/* ---------- plan ---------- */
+.slotnow{background:var(--band);border-radius:18px;padding:12px 14px;margin-bottom:12px}
+.slotnow b{font-family:Fraunces,serif;font-size:1.2rem;display:block}
+.slotnow span{font-size:.85rem;color:var(--ink2);font-weight:700}
+.opt{background:var(--paper2);border-radius:16px;padding:12px 14px;margin:8px 0}
+.opt h3{margin:0;font-size:1rem;font-weight:800}
+.opt p{margin:3px 0 0;font-size:.85rem;color:var(--ink2);font-weight:600}
+.opt .thumbs{display:flex;gap:8px;margin-top:9px}
+.opt .thumbs button{padding:5px 14px;border-radius:12px;background:var(--white);font-size:1rem;border:2px solid var(--line)}
+.opt .thumbs button.on{background:var(--band2);border-color:var(--band2)}
+.slot h3.sh{font-family:Fraunces,serif;font-size:1.05rem;margin:18px 0 2px}
+.slot p.st{margin:0 0 4px;font-size:.8rem;color:var(--ink2);font-weight:700}
+.rule{display:flex;gap:10px;align-items:flex-start;margin:9px 0;font-size:.95rem}
+.rule b{flex:0 0 auto;font-family:Fraunces,serif;font-size:1.15rem;color:var(--meal)}
+.swap{margin:9px 0;font-size:.95rem;line-height:1.4}
+.swap s{color:var(--ink2);text-decoration-thickness:1px}
+.swap b{color:var(--ok)}
+.shopcat{font-family:Fraunces,serif;font-size:1rem;margin:16px 0 4px}
+.shopcat:first-child{margin-top:4px}
+.shopitem{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:14px;background:var(--paper2);margin:5px 0;width:100%;text-align:left;font-size:.95rem;font-weight:700}
+.shopitem .bx{flex:0 0 auto;width:24px;height:24px;border-radius:8px;border:2px solid var(--line);background:var(--white);display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.shopitem.on{opacity:.5}
+.shopitem.on span.nm{text-decoration:line-through}
+.shopitem.on .bx{background:var(--band2);border-color:var(--band2)}
 .save{display:block;width:100%;margin-top:14px;height:62px;border-radius:20px;background:var(--ink);color:var(--paper);font-size:1.2rem;font-weight:800;letter-spacing:.01em}
 .save:disabled{opacity:.35}
 .save:active{transform:scale(.98)}
@@ -153,9 +200,19 @@ nav button.on{color:var(--meal)}
       <button>7</button><button>8</button><button>9</button>
       <button>,</button><button>0</button><button class="del" aria-label="Vee uit">⌫</button>
     </div>
-    <div class="tags" id="tags">
-      <button data-g="koffie">☕ Koffie</button>
-      <button data-g="medisyne">💊 Nuwe medisyne</button>
+    <div class="foodwrap">
+      <label for="f-food">Wat het jy geëet of gedrink?</label>
+      <div class="foodbox"><input type="text" id="f-food" placeholder="bv. piesang en jogurt" maxlength="90" autocomplete="off"><span class="ics" id="f-ics"></span></div>
+      <button class="pickbtn" id="b-pick">Of kies uit die lys ▾</button>
+      <div class="grid" id="foodgrid"></div>
+    </div>
+    <div class="foodwrap">
+      <label>Hoe voel jy nou?</label>
+      <div class="moods" id="moods">
+        <button data-m="goed"><i>😀</i><span>Goed</span></button>
+        <button data-m="sos"><i>😐</i><span>So-so</span></button>
+        <button data-m="sleg"><i>🤢</i><span>Sleg</span></button>
+      </div>
     </div>
     <button class="save" id="save" disabled>Stoor lesing</button>
     <details class="more">
@@ -235,6 +292,47 @@ nav button.on{color:var(--meal)}
     <p class="hint" id="count"></p>
   </div>
 </section>
+
+<!-- ========== KOS / PLAN ========== -->
+<section class="screen" id="s-plan">
+  <div class="card">
+    <h2>Wat eet ek nou?</h2>
+    <div id="slotnow"></div>
+    <div id="slotopts"></div>
+    <button class="pickbtn" id="b-allplan">Wys my die hele dag ▾</button>
+    <div id="allplan" style="display:none"></div>
+  </div>
+
+  <div class="card">
+    <h2>Die vier reëls</h2>
+    <div class="rule"><b>1</b><span>Nooit brood, pap, vrugte of iets soets <b>alleen</b> nie — altyd iets met proteïen of vet daarby (eier, kaas, jogurt, neute, avo).</span></div>
+    <div class="rule"><b>2</b><span>Klein bietjies, <b>elke 3 uur</b>. 'n Groot bord ná lank niks is presies wat die spyker maak.</span></div>
+    <div class="rule"><b>3</b><span>Niks soets op 'n <b>leë maag</b> nie — sap, koeldrank, heuning, 'n skudding op sy eie.</span></div>
+    <div class="rule"><b>4</b><span>Eet <b>binne 'n uur</b> nadat jy wakker word, selfs al is jy glad nie honger nie. Klein is beter as niks.</span></div>
+    <p class="hint" style="margin-top:12px">Drink deur die dag water — meer as wat voel nodig is.</p>
+  </div>
+
+  <div class="card">
+    <h2>Ruil om</h2>
+    <div id="swaps"></div>
+  </div>
+
+  <div class="card">
+    <h2>Inkopielys</h2>
+    <p class="hint">Alles wat die plan nodig het. Tik af soos jy koop — dit onthou wat jy gemerk het.</p>
+    <div id="shop"></div>
+    <div class="btns"><button class="btn" id="b-shopclear">Maak merke skoon</button><button class="btn primary" id="b-shopcopy">Deel die lys</button></div>
+  </div>
+
+  <div class="card settings">
+    <h2>Vertel vir Megan hoe dit gaan</h2>
+    <p class="hint">Wat werk, wat werk nie, waarvan hou jy nie. Dit bly op jou foon totdat jy dit stuur.</p>
+    <textarea id="fb-note" style="font-family:inherit;font-size:1rem;min-height:90px" placeholder="bv. die ontbyt werk goed, maar ek kry nie die middagete in nie"></textarea>
+    <button class="btn full" id="b-fbsave">Stoor wat ek geskryf het</button>
+    <button class="btn primary full" id="b-week">Stuur my week vir Megan</button>
+    <p class="hint" id="fb-count"></p>
+  </div>
+</section>
 </div>
 
 <!-- install sheet -->
@@ -265,6 +363,13 @@ nav button.on{color:var(--meal)}
     <label>Waarde (mmol/L)</label><input type="number" step="0.1" id="e-v" inputmode="decimal">
     <div class="meta"><label>Datum<input type="date" id="e-date"></label><label>Tyd<input type="time" id="e-time"></label></div>
     <label>Nota</label><input type="text" id="e-note" maxlength="60">
+    <label>Kos</label><input type="text" id="e-food" maxlength="90">
+    <label>Gevoel</label>
+    <div class="moods" id="e-moods">
+      <button data-m="goed"><i>😀</i><span>Goed</span></button>
+      <button data-m="sos"><i>😐</i><span>So-so</span></button>
+      <button data-m="sleg"><i>🤢</i><span>Sleg</span></button>
+    </div>
   </div>
   <div class="btns"><button class="btn danger" id="e-del">Vee uit</button><button class="btn" id="e-cancel">Kanselleer</button><button class="btn primary" id="e-save">Stoor</button></div>
 </div></div>
@@ -273,6 +378,7 @@ nav button.on{color:var(--meal)}
   <button data-s="home" class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Nuwe</button>
   <button data-s="graph"><svg viewBox="0 0 24 24"><path d="M3 17l5-6 4 4 5-7 4 5"/></svg>Grafiek</button>
   <button data-s="list"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Lesings</button>
+  <button data-s="plan"><svg viewBox="0 0 24 24"><path d="M6 3v8a2 2 0 0 0 2 2 2 2 0 0 0 2-2V3M8 13v8M17 3c-1.5 1.5-2 3.5-2 5.5S15.5 12 17 12v9"/></svg>Meal Plan</button>
   <button data-s="more"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.5-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.5 2 1.5A7 7 0 0 0 5 12a7 7 0 0 0 .1 1.2l-2 1.5 2 3.5 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.5-2-1.5A7 7 0 0 0 19 12z"/></svg>Meer</button>
 </div></nav>
 <div id="printpage"></div>
@@ -284,8 +390,72 @@ const KEY='glukose.v1', TKEY='glukose.targets';
 const fmt=n=>n.toFixed(1).replace('.',',');
 const pad2=n=>String(n).padStart(2,'0');
 const KIND={fast:'Voor ete',meal:'Na ete',hist:'Ouer lesing'};
-const NICONS=[[/koffie|coffee/i,'☕'],[/medisyne|medikasie|pil/i,'💊']];
-const icos=r=>NICONS.filter(([re])=>re.test(r.n||'')).map(([,e])=>e).join('');
+/* --- kos-ikone: Afrikaans EN Engels; kos sonder 'n ikoon stoor net die naam --- */
+const FOODS=[
+ ['🍨','Jogurt','jogurt|joghurt|yoghurt|yogurt|greek'],
+ ['🥜','Granola','granola|muesli|futurelife|future life|ontbytgraan|cereal|pronutro|weetbix'],
+ ['🥣','Hawermout','hawermout|oats|oatmeal|porridge'],
+ ['🍚','Pap','\\bpap\\b|mieliepap|maltabella|slap pap|stywepap'],
+ ['🍞','Brood','brood|bread|toast|roosterbrood|snytjie'],
+ ['🫓','Provita','provita|cracker|krakers|ryvita'],
+ ['🍪','Beskuit','beskuit|rusk'],
+ ['🥚','Eier','eier|eiers|\\begg|eggs|omelet'],
+ ['🍗','Hoender','hoender|chicken'],
+ ['🥩','Vleis','vleis|beef|steak|\\bmeat\\b|\\blam\\b|skaap|mince|maalvleis'],
+ ['🌭','Wors','wors|sausage|viennas'],
+ ['🐟','Vis','\\bvis\\b|fish|\\bhake\\b|stokvis|salm|salmon|kabeljou'],
+ ['🥫','Tuna','tuna|tunavis|pilchard'],
+ ['🍖','Biltong','biltong|droëwors|droewors'],
+ ['🫘','Bone','\\bbone\\b|beans|lensies|lentils|sojabone|kekerertjies|chickpea|hummus'],
+ ['🥜','Neute','neute|\\bnuts\\b|amandel|almond|pekan|pecan|cashew|okkerneut|walnut|sonneblomsaad|saad|seeds'],
+ ['🥜','Grondboontjiebotter','grondboontjiebotter|peanut butter|grondboontjie'],
+ ['🧀','Kaas','kaas|cheese|cheddar|feta'],
+ ['🧀','Maaskaas','maaskaas|cottage cheese'],
+ ['🥛','Melk','melk|\\bmilk\\b|amasi'],
+ ['🧈','Botter','botter|butter|margarien|margarine'],
+ ['🥑','Avokado','\\bavo\\b|avokado|avocado'],
+ ['🥗','Slaai','slaai|salad'],
+ ['🥦','Groente','groente|\\bveg\\b|vegetables|brokkoli|broccoli|spinasie|spinach|blomkool|cauliflower|kool\\b|boontjies'],
+ ['🍅','Tamatie','tamatie|tomato'],
+ ['🥒','Komkommer','komkommer|cucumber'],
+ ['🥕','Wortel','wortel|carrot'],
+ ['🧅','Ui','\\bui\\b|uie|onion'],
+ ['🌽','Mielies','mielie|mielies|corn|stampmielies'],
+ ['🥔','Aartappel','aartappel|potato'],
+ ['🍠','Patat','patat|soetpatat|sweet potato'],
+ ['🍚','Rys','\\brys\\b|\\brice\\b|bruinrys'],
+ ['🍝','Pasta','pasta|makaroni|macaroni|spaghetti|noodles|noedels'],
+ ['🍟','Tjips','tjips|chips|slaptjips|fries|skyfies'],
+ ['🍌','Piesang','piesang|banana'],
+ ['🍎','Appel','appel|apple'],
+ ['🍊','Nartjie','nartjie|naartjie|lemoen|orange|suurlemoen'],
+ ['🍇','Druiwe','druiwe|grapes'],
+ ['🍓','Bessies','aarbei|strawberry|bessies|berries|bloubessie|blueberr'],
+ ['🍐','Peer','\\bpeer\\b|pear'],
+ ['🍉','Waatlemoen','waatlemoen|watermelon|spanspek|melon'],
+ ['🥪','Toebroodjie','toebroodjie|sandwich|sarmie|broodjie'],
+ ['🍲','Sop','\\bsop\\b|soup'],
+ ['🍘','Bredie','bredie|stew|potjie|kerrie|curry'],
+ ['🍕','Pizza','pizza'],
+ ['🍔','Burger','burger|hamburger'],
+ ['☕','Koffie','koffie|coffee'],
+ ['🍵','Tee','\\btee\\b|\\btea\\b|rooibos'],
+ ['🧋','Skudding','skudding|shake|smoothie|milkshake|proteïen|protein'],
+ ['🧃','Sap','\\bsap\\b|juice|vrugtesap'],
+ ['🥤','Koeldrank','koeldrank|cooldrink|cola|coke|fanta|fizzy|soda'],
+ ['💧','Water','\\bwater\\b'],
+ ['🍷','Wyn','\\bwyn\\b|wine|bier|beer|brandewyn'],
+ ['🍫','Sjokolade','sjokolade|chocolate|chokka'],
+ ['🍰','Koek','\\bkoek\\b|cake|muffin|tert|\\bpie\\b|pastei'],
+ ['🍬','Lekkers','lekkers|sweets|candy|suiker|sugar|heuning|honey|konfyt|\\bjam\\b'],
+ ['🍨','Roomys','roomys|ice ?cream|ysroom'],
+ ['💊','Medisyne','medisyne|medikasie|\\bpil\\b|pille|tablet|kapsule']
+];
+const FRE=FOODS.map(f=>new RegExp(f[2],'i'));
+const foodText=r=>((r&&r.f)||'')+' '+((r&&r.n)||'');
+function icos(r){ const t=foodText(r), out=[]; FRE.forEach((re,i)=>{ if(re.test(t)&&!out.includes(FOODS[i][0])) out.push(FOODS[i][0]); }); return out.join(''); }
+const MOODI={goed:'😀',sos:'😐',sleg:'🤢'};
+const MOODW={goed:'Goed',sos:'So-so',sleg:'Sleg'};
 const COL={fast:'var(--fast)',meal:'var(--meal)',hist:'var(--hist)'};
 let data=load(), targets=JSON.parse(localStorage.getItem(TKEY)||'{"lo":4.5,"hi":6}');
 function load(){
@@ -312,13 +482,30 @@ function closeSheet(id){ $(id).classList.remove('on'); if(sheetOpen===id){ sheet
 window.addEventListener('popstate',()=>{ if(sheetOpen){ $(sheetOpen).classList.remove('on'); sheetOpen=null; } });
 
 /* ================= entry ================= */
-let entry='', kind='meal';
+let entry='', kind='meal', mood=null;
 const disp=$('#disp'), verdict=$('#verdict'), saveBtn=$('#save');
-let tags=new Set();
-const TAGWORD={koffie:'Koffie',medisyne:'Nuwe medisyne'};
-function paintTags(){document.querySelectorAll('#tags button').forEach(b=>b.classList.toggle('on',tags.has(b.dataset.g)));}
-document.querySelectorAll('#tags button').forEach(b=>b.onclick=()=>{const g=b.dataset.g;tags.has(g)?tags.delete(g):tags.add(g);paintTags();if(navigator.vibrate)navigator.vibrate(8);});
-function resetForm(){ entry=''; $('#f-date').value=todayISO(); $('#f-time').value=nowHM(); $('#f-note').value=''; tags.clear(); paintTags(); kind=(new Date().getHours()<10)?'fast':'meal'; paintKinds(); paintEntry(); }
+/* --- kos-veld + kieslys --- */
+$('#foodgrid').innerHTML=FOODS.map((f,i)=>`<button type="button" data-i="${i}"><i>${f[0]}</i><span>${f[1]}</span></button>`).join('');
+function paintFood(){
+  const t=$('#f-food').value;
+  $('#f-ics').textContent=icos({f:t});
+  document.querySelectorAll('#foodgrid button').forEach(b=>b.classList.toggle('on',FRE[+b.dataset.i].test(t)));
+}
+$('#f-food').addEventListener('input',paintFood);
+$('#b-pick').onclick=()=>{ const g=$('#foodgrid'); g.classList.toggle('on'); $('#b-pick').classList.toggle('on',g.classList.contains('on')); $('#b-pick').textContent=g.classList.contains('on')?'Klaar gekies \u25B4':'Of kies uit die lys \u25BE'; };
+$('#foodgrid').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  const i=+b.dataset.i, inp=$('#f-food'), word=FOODS[i][1];
+  if(FRE[i].test(inp.value)){
+    inp.value=inp.value.split(',').map(x=>x.trim()).filter(x=>x&&!FRE[i].test(x)).join(', ');
+  } else {
+    inp.value=inp.value.trim()?inp.value.replace(/,\s*$/,'')+', '+word:word;
+  }
+  paintFood(); if(navigator.vibrate) navigator.vibrate(8);
+});
+document.querySelectorAll('#moods button').forEach(b=>b.onclick=()=>{ mood=(mood===b.dataset.m)?null:b.dataset.m; paintMood(); if(navigator.vibrate) navigator.vibrate(8); });
+function paintMood(){document.querySelectorAll('#moods button').forEach(b=>b.classList.toggle('on',b.dataset.m===mood));}
+function resetForm(){ entry=''; $('#f-date').value=todayISO(); $('#f-time').value=nowHM(); $('#f-note').value=''; $('#f-food').value=''; mood=null; paintFood(); paintMood(); kind=(new Date().getHours()<10)?'fast':'meal'; paintKinds(); paintEntry(); }
 function paintKinds(){document.querySelectorAll('#s-home .kind').forEach(b=>b.classList.toggle('on',b.dataset.k===kind));}
 function paintEntry(){
   const v=parseFloat(entry.replace(',','.'));
@@ -341,8 +528,9 @@ document.querySelectorAll('#s-home .kind').forEach(b=>b.onclick=()=>{kind=b.data
 saveBtn.onclick=()=>{
   const v=parseFloat(entry.replace(',','.')); if(isNaN(v)) return;
   const t=$('#f-date').value+'T'+($('#f-time').value||nowHM());
-  const note=[...tags].map(g=>TAGWORD[g]).concat($('#f-note').value.trim()||[]).join(' · ')||undefined;
-  data.push({id:Date.now().toString(36),t,v,k:kind,n:note});
+  const note=$('#f-note').value.trim()||undefined;
+  const food=$('#f-food').value.trim()||undefined;
+  data.push({id:Date.now().toString(36),t,v,k:kind,n:note,f:food,m:mood||undefined});
   persist(); toast('Gestoor — '+fmt(v)+' mmol/L'); resetForm();
   if(navigator.vibrate) navigator.vibrate([20,40,20]);
 };
@@ -352,7 +540,7 @@ function renderToday(){
   const el=$('#today'); const rows=data.filter(r=>dayOf(r)===todayISO());
   $('#greet').textContent=niceDate(todayISO())+(rows.length?' · '+rows.length+(rows.length===1?' lesing':' lesings'):' · hoe gedra die kinders hulle vandag?');
   if(!rows.length){el.innerHTML='<div class="empty" style="width:100%">Jou eerste lesing vir vandag kom hierbo in.</div>';return;}
-  el.innerHTML=rows.map(r=>{const ic=icos(r);return `<div class="chip ${r.k}"><b class="num">${fmt(r.v)}</b><span>${r.t.slice(11)} · ${KIND[r.k]}${ic?' '+ic:''}</span></div>`;}).join('');
+  el.innerHTML=rows.map(r=>{const ic=icos(r);return `<div class="chip ${r.k}"><b class="num">${fmt(r.v)}</b><span>${r.t.slice(11)} · ${KIND[r.k]}${r.m?' '+MOODI[r.m]:''}</span>${ic?`<span style="font-size:1.05rem;margin-top:2px">${ic}</span>`:''}</div>`;}).join('');
 }
 
 /* ================= chart ================= */
@@ -419,7 +607,8 @@ function renderChart(){
   let tip=null;
   const showTip=(i,cx,cy)=>{ const r=rows[i]; if(tip) tip.remove(); tip=document.createElement('div'); tip.className='tip';
     const rect=svg.getBoundingClientRect(), sx=rect.width/W;
-    tip.innerHTML=`<b class="num">${fmt(r.v)}</b> mmol/L<br>${niceDate(dayOf(r),false)} ${r.t.slice(11)} · ${KIND[r.k]}${r.n?'<br>'+(icos(r)?icos(r)+' ':'')+'<i>'+r.n+'</i>':''}`;
+    const extra=[r.f,r.n].filter(Boolean).join(' · ');
+    tip.innerHTML=`<b class="num">${fmt(r.v)}</b> mmol/L<br>${niceDate(dayOf(r),false)} ${r.t.slice(11)} · ${KIND[r.k]}${r.m?' '+MOODI[r.m]:''}${extra?'<br>'+(icos(r)?icos(r)+' ':'')+'<i>'+extra+'</i>':''}`;
     box.appendChild(tip); const half=tip.offsetWidth/2, bw=box.clientWidth; tip.style.left=Math.min(bw-half,Math.max(half,cx*sx))+'px'; tip.style.top=Math.max(cy*sx,tip.offsetHeight+6)+'px';
     clearTimeout(box._x); box._x=setTimeout(()=>{tip&&tip.remove();tip=null;},3500); };
   const pick=ev=>{ const rect=svg.getBoundingClientRect(), sx=W/rect.width; const px=(ev.clientX-rect.left)*sx, py=(ev.clientY-rect.top)*sx;
@@ -492,17 +681,23 @@ function renderList(){
   el.innerHTML=days.map(d=>{const rows=data.filter(r=>dayOf(r)===d).slice().reverse();
     return `<div class="day"><span>${niceDate(d)}</span><span>${rows.length}</span></div>`+rows.map(r=>{const [c]=verdictOf(r.v);
       const ic=icos(r);
-      return `<button class="row" data-id="${r.id}"><span class="dot" style="background:${COL[r.k]}"></span><span class="v num" style="color:${c==='ok'?'var(--ink)':c==='hi'?'var(--meal)':'var(--warn)'}">${fmt(r.v)}</span><span class="k"><b>${KIND[r.k]}${ic?' <span style="font-size:1.05rem">'+ic+'</span>':''}</b>${r.n||''}</span><span class="t">${r.t.slice(11)}</span></button>`;}).join('');}).join('');
+      const extra=[r.f,r.n].filter(Boolean).join(' · ');
+      return `<button class="row" data-id="${r.id}"><span class="dot" style="background:${COL[r.k]}"></span><span class="v num" style="color:${c==='ok'?'var(--ink)':c==='hi'?'var(--meal)':'var(--warn)'}">${fmt(r.v)}</span><span class="k"><b>${KIND[r.k]}${r.m?' '+MOODI[r.m]:''}${ic?' <span style="font-size:1.05rem">'+ic+'</span>':''}</b>${extra}</span><span class="t">${r.t.slice(11)}</span></button>`;}).join('');}).join('');
 }
 $('#list').addEventListener('click',e=>{const b=e.target.closest('.row');if(b)openEdit(b.dataset.id);});
 let editing=null;
+let eMood=null;
+function paintEMood(){document.querySelectorAll('#e-moods button').forEach(b=>b.classList.toggle('on',b.dataset.m===eMood));}
+document.querySelectorAll('#e-moods button').forEach(b=>b.onclick=()=>{ eMood=(eMood===b.dataset.m)?null:b.dataset.m; paintEMood(); });
 function openEdit(id){ const r=data.find(x=>x.id===id); if(!r) return; editing=r;
   $('#e-v').value=r.v; $('#e-date').value=r.t.slice(0,10); $('#e-time').value=r.t.slice(11); $('#e-note').value=r.n||'';
+  $('#e-food').value=r.f||''; eMood=r.m||null; paintEMood();
   document.querySelectorAll('#e-kinds .kind').forEach(b=>b.classList.toggle('on',b.dataset.k===r.k)); openSheet('#sheet'); }
 document.querySelectorAll('#e-kinds .kind').forEach(b=>b.onclick=()=>{editing.k=b.dataset.k;document.querySelectorAll('#e-kinds .kind').forEach(x=>x.classList.toggle('on',x===b));});
 $('#e-cancel').onclick=()=>{closeSheet('#sheet');data=load();};
 $('#e-save').onclick=()=>{const v=parseFloat($('#e-v').value);if(isNaN(v)||v<1||v>35){toast('Kyk weer na die waarde');return;}
-  editing.v=v; editing.t=$('#e-date').value+'T'+$('#e-time').value; editing.n=$('#e-note').value.trim()||undefined; if(editing.k==='hist') editing.k='meal';
+  editing.v=v; editing.t=$('#e-date').value+'T'+$('#e-time').value; editing.n=$('#e-note').value.trim()||undefined;
+  editing.f=$('#e-food').value.trim()||undefined; editing.m=eMood||undefined; if(editing.k==='hist') editing.k='meal';
   closeSheet('#sheet'); persist(); toast('Verander');};
 $('#e-del').onclick=()=>{ if(!confirm('Hierdie lesing uitvee? ('+fmt(editing.v)+' mmol/L)')) return; data=data.filter(x=>x!==editing); closeSheet('#sheet'); persist(); toast('Uitgevee'); };
 
@@ -510,28 +705,177 @@ $('#e-del').onclick=()=>{ if(!confirm('Hierdie lesing uitvee? ('+fmt(editing.v)+
 function renderMore(){ $('#t-lo').value=targets.lo; $('#t-hi').value=targets.hi; $('#count').textContent=data.length+' lesings gestoor op hierdie foon.'; }
 $('#t-save').onclick=()=>{const lo=parseFloat($('#t-lo').value),hi=parseFloat($('#t-hi').value);if(isNaN(lo)||isNaN(hi)||lo>=hi){toast('Laagste moet kleiner as hoogste wees');return;}
   targets={lo,hi}; localStorage.setItem(TKEY,JSON.stringify(targets)); renderAll(); toast('Teikens gestoor');};
-const csv=()=>'datum,tyd,glukose_mmol_L,tipe,nota\n'+data.map(r=>`${r.t.slice(0,10)},${r.t.slice(11)},${r.v},${KIND[r.k]},${(r.n||'').replace(/,/g,';')}`).join('\n');
+const cln=x=>(x||'').replace(/,/g,';');
+const csv=()=>'datum,tyd,glukose_mmol_L,tipe,nota,kos,gevoel\n'+data.map(r=>`${r.t.slice(0,10)},${r.t.slice(11)},${r.v},${KIND[r.k]},${cln(r.n)},${cln(r.f)},${r.m?MOODW[r.m]:''}`).join('\n');
 $('#b-print').onclick=()=>{show('graph');setTimeout(()=>window.print(),300);};
 window.addEventListener('beforeprint',renderPrint);
 $('#b-share').onclick=async()=>{ const name='glukose-'+todayISO()+'.csv'; const file=new File([csv()],name,{type:'text/csv'});
   if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'Glukose-lesings'});return;}catch(e){if(e.name==='AbortError')return;}}
   const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=name;a.click(); toast('Lêer afgelaai'); };
 $('#b-copy').onclick=async()=>{try{await navigator.clipboard.writeText(csv());toast('Gekopieer — plak dit in WhatsApp of e-pos');}catch{toast('Kon nie kopieer nie');}};
+const moodKey=w=>{const t=(w||'').toLowerCase(); return /goed|good/.test(t)?'goed':/so-?so|sos/.test(t)?'sos':/sleg|bad/.test(t)?'sleg':undefined;};
 function importText(txt){ const lines=txt.split(/\r?\n/).map(l=>l.trim()).filter(Boolean); let n=0;
-  for(const l of lines){ const m=l.match(/^(\d{4}-\d\d-\d\d)[ ,;\t]+(\d\d:\d\d)[ ,;\t]+(\d+[.,]?\d*)(?:[ ,;\t]+([^,;\t]+))?(?:[ ,;\t]+(.+))?/); if(!m) continue;
-    const v=parseFloat(m[3].replace(',','.')); if(isNaN(v)) continue; const tp=m[4]||''; const k=/vast|fast|voor/i.test(tp)?'fast':/ouer|hist/i.test(tp)?'hist':'meal';
-    if(data.some(r=>r.t===m[1]+'T'+m[2]&&r.v===v)) continue; data.push({id:Date.now().toString(36)+n,t:m[1]+'T'+m[2],v,k,n:(m[5]||'').trim()||undefined}); n++; }
+  for(const l of lines){
+    if(/^datum/i.test(l)) continue;
+    let d,tm,vv,tp,nt,ks,gv; const c=l.split(',');
+    if(c.length>=5&&/^\d{4}-\d\d-\d\d$/.test(c[0].trim())&&/^\d\d:\d\d/.test(c[1].trim())){
+      d=c[0].trim(); tm=c[1].trim().slice(0,5); vv=c[2].trim(); tp=(c[3]||'').trim(); nt=(c[4]||'').trim(); ks=(c[5]||'').trim(); gv=(c[6]||'').trim();
+    } else {
+      const m=l.match(/^(\d{4}-\d\d-\d\d)[ ,;\t]+(\d\d:\d\d)[ ,;\t]+(\d+[.,]?\d*)(?:[ ,;\t]+([^,;\t]+))?(?:[ ,;\t]+(.+))?/); if(!m) continue;
+      d=m[1]; tm=m[2]; vv=m[3]; tp=m[4]||''; nt=(m[5]||'').trim(); ks=''; gv='';
+    }
+    const v=parseFloat(vv.replace(',','.')); if(isNaN(v)) continue;
+    const k=/vast|fast|voor/i.test(tp)?'fast':/ouer|hist/i.test(tp)?'hist':'meal';
+    if(data.some(r=>r.t===d+'T'+tm&&r.v===v)) continue;
+    data.push({id:Date.now().toString(36)+n,t:d+'T'+tm,v,k,n:nt||undefined,f:ks||undefined,m:moodKey(gv)}); n++; }
   if(n) persist(); toast(n?n+' lesings ingebring':lines.length?'Alles was reeds ingebring':'Niks herken nie — is dit die regte lêer?'); return n; }
 $('#b-import').onclick=()=>{ if(importText($('#imp').value)) $('#imp').value=''; };
 $('#b-file').onclick=()=>$('#f-file').click();
 $('#f-file').onchange=e=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{importText(rd.result);show('graph');}; rd.readAsText(f); e.target.value=''; };
 $('#imp').placeholder='2026-08-24 07:10 5,4 voor ete\n2026-08-24 13:30 6,8';
 
+/* ================= kos-plan ================= */
+const FBKEY='glukose.planfb', FNKEY='glukose.fbnote';
+let planfb=JSON.parse(localStorage.getItem(FBKEY)||'{}');
+const PLAN=[
+ {id:'ontbyt',t:'Ontbyt',from:5,to:9.5,sub:"Binne 'n uur nadat jy wakker word",opts:[
+   {id:'b1',n:"Greek jogurt (gewone, nie gegeurde nie) + 'n half koppie Futurelife Zero granola + 'n handvol neute of sonneblomsaad",
+        w:"Die vet en proteïen in die jogurt hou die granola stadig. Hou by 'n half koppie granola, nie 'n vol bak nie."},
+   {id:'b2',n:"Twee eiers + een snytjie lae-GI bruinbrood + avo",
+        w:"Die eier en avo beteken die brood kom stadig deur."},
+   {id:'b3',n:"Gewone hawermout (nie kits nie) met melk, kaneel en 'n eetlepel grondboontjiebotter",
+        w:"Kitshawermout is fyn gemaal en gaan vinnig op. Gewone hawermout is die stadige een."},
+   {id:'b5',n:"Die Replace-skudding — maar op sy eie, sonder 'n piesang of vrug daarby",
+        w:"Replace is self die ete (\"your meal in a glass\"). 'n Piesang bo-op is 'n tweede ete se koolhidrate in dieselfde oomblik. As jy iets by wil hê, maak dit 'n gekookte eier of neute — nie vrug nie."},
+   {id:'b4',n:"Nie honger nie? Klein bakkie jogurt met neute, of maaskaas op twee Provitas",
+        w:"Klein is beter as niks. Sonder ontbyt is die vermoeide gevoel teen elfuur amper seker."}]},
+ {id:'snack1',t:'Iets klein voormiddag',from:9.5,to:11.5,sub:'Omtrent drie uur ná ontbyt',opts:[
+   {id:'s1',n:"'n Appel met kaasblokkies",w:"Die vrug alleen sou opskiet. Die kaas hou dit plat."},
+   {id:'s2',n:"'n Handvol neute — amandels, pekanneute of okkerneute",w:"Vet en vesel, byna geen suiker."},
+   {id:'s3',n:"Maaskaas op twee Provitas",w:"Proteïen met 'n bietjie stadige stysel."},
+   {id:'s4',n:"'n Gekookte eier",w:"Die maklikste een as jy nie lus is vir eet nie."}]},
+ {id:'middag',t:'Middagete',from:11.5,to:14.5,sub:'Omtrent 12:00 tot 13:00',opts:[
+   {id:'m0',n:"Bruinbrood met kaas en tamatie",
+        w:"Die kaas is die proteïen en die vet — dis presies wat die brood stadig maak. Een sny is beter as twee, en nog tamatie of blaarslaai maak dit nog stadiger."},
+   {id:'m1',n:"Groot slaai met hoender of tuna, olyfolie, en een snytjie bruinbrood",
+        w:"Die slaai en olie vertraag alles. Die brood gee genoeg energie sonder 'n spyker."},
+   {id:'m2',n:"Toebroodjie op lae-GI bruinbrood met eier of hoender, plus tamatie en blaarslaai",
+        w:"Een snytjie eerder as twee, en altyd met proteïen binne-in."},
+   {id:'m3',n:"Lensie- of bonesop met 'n snytjie brood",
+        w:"Bone en lensies is van die stadigste koolhidrate wat daar is."},
+   {id:'m4',n:"Oorskiet van gisteraand se aandete, halwe porsie",
+        w:"Beter as om middagete oor te slaan."}]},
+ {id:'snack2',t:'Iets klein namiddag',from:14.5,to:17,sub:'Die tyd wat jy gewoonlik plat voel',opts:[
+   {id:'n1',n:"'n Handvol neute en 'n paar druiwe",w:"Die neute eerste, dan die vrug."},
+   {id:'n2',n:"Klein bakkie jogurt",w:"Proteïen wat die middag deurdra tot aandete."},
+   {id:'n3',n:"Kaas met komkommer of tamatie",w:"Byna geen koolhidraat, hou die val weg."}]},
+ {id:'aand',t:'Aandete',from:17,to:20,sub:'Verkieslik voor 19:00',opts:[
+   {id:'a1',n:"Hoender of vis (stokvis, kabeljou) + baie groente + 'n vuis vol patat of bruinrys",
+        w:"Die stysel bly by een vuis groot. Die groente vul die res van die bord."},
+   {id:'a2',n:"Bredie met lensies of bone en baie groente",
+        w:"Vesel en proteïen in een pot — die stadigste ete op die lys."},
+   {id:'a3',n:"Omelet met sampioene, tamatie en spinasie, met slaai langsaan",
+        w:"As jy moeg is en nie wil kook nie."},
+   {id:'a4',n:"Rooivleis eerder net af en toe, en klein — hoender, vis en eier is die daaglikse keuses",
+        w:"Hou ook die water hoog deur die dag."}]},
+ {id:'aandsnack',t:'Voor slaaptyd',from:20,to:22,sub:'Net as jy honger is of die oggende laag begin',opts:[
+   {id:'v1',n:"Klein bakkie jogurt of 'n paar neute",w:"'n Bietjie proteïen voor slaap hou die oggendsyfer stabieler."},
+   {id:'v2',n:"Niks nodig nie — net water",w:"As jy nie honger is nie, is dit ook reg."}]}
+];
+const SWAPS=[
+ ["Piesang op sy eie","piesang saam met neute of 'n lepel maaskaas"],
+ ["Die Replace-skudding sáám met 'n piesang","die skudding alleen — dit is self die ete — of 'n piesang met neute, maar nie albei nie"],
+ ["Enige skudding op 'n leë maag as jy nog iets gaan eet","iets solieds eerder — vloeistof loop die vinnigste deur die maag"],
+ ["Vrugtesap","die hele vrug, en water daarby"],
+ ["Witbrood of roosterbrood alleen","lae-GI bruinbrood met eier, kaas of avo"],
+ ["Kitshawermout","gewone hawermout wat jy self kook"],
+ ["Koeldrank","water met suurlemoen, of 'n koppie rooibos"],
+ ["Beskuit en koffie as ontbyt","jogurt met neute — en die koffie daarna"],
+ ["Pap op sy eie","pap met melk en neute, en 'n eier langsaan"],
+ ["'n Groot bord ná 'n lang tyd niks","die helfte daarvan, en dan weer iets oor drie uur"]
+];
+function curSlot(){ const d=new Date(), h=d.getHours()+d.getMinutes()/60; return PLAN.find(p=>h>=p.from&&h<p.to)||null; }
+function optHTML(o){ const f=planfb[o.id]||0;
+  return `<div class="opt"><h3>${o.n}</h3><p>${o.w}</p><div class="thumbs"><button data-o="${o.id}" data-v="1" class="${f===1?'on':''}">\u{1F44D}</button><button data-o="${o.id}" data-v="-1" class="${f===-1?'on':''}">\u{1F44E}</button></div></div>`; }
+function renderPlan(){
+  const c=curSlot();
+  $('#slotnow').innerHTML=c
+    ? `<div class="slotnow"><b>${c.t}</b><span>${c.sub}</span></div>`
+    : `<div class="slotnow"><b>Slaaptyd</b><span>Volgende: ontbyt, binne 'n uur nadat jy wakker word</span></div>`;
+  $('#slotopts').innerHTML=(c||PLAN[0]).opts.map(optHTML).join('');
+  $('#allplan').innerHTML=PLAN.map(p=>`<div class="slot"><h3 class="sh">${p.t}</h3><p class="st">${p.sub}</p>${p.opts.map(optHTML).join('')}</div>`).join('');
+  $('#swaps').innerHTML=SWAPS.map(([a,b])=>`<div class="swap"><s>${a}</s><br>\u2192 <b>${b}</b></div>`).join('');
+  renderShop();
+  $('#fb-note').value=localStorage.getItem(FNKEY)||'';
+  const nl=Object.values(planfb).filter(v=>v===1).length, nd=Object.values(planfb).filter(v=>v===-1).length;
+  $('#fb-count').textContent=(nl||nd)?`Jy het ${nl} kos gemerk waarvan jy hou en ${nd} waarvan jy nie hou nie.`:'Merk met \u{1F44D} of \u{1F44E} langs elke ete wat jy probeer het.';
+}
+$('#s-plan').addEventListener('click',e=>{
+  const b=e.target.closest('.thumbs button'); if(!b) return;
+  const id=b.dataset.o, v=+b.dataset.v;
+  planfb[id]=(planfb[id]===v)?0:v; localStorage.setItem(FBKEY,JSON.stringify(planfb));
+  renderPlan(); if(navigator.vibrate) navigator.vibrate(8);
+});
+$('#b-allplan').onclick=()=>{ const a=$('#allplan'), open=a.style.display==='none';
+  a.style.display=open?'block':'none'; $('#b-allplan').textContent=open?'Steek die hele dag weg \u25B4':'Wys my die hele dag \u25BE'; };
+/* --- inkopielys --- */
+const SHKEY='glukose.shop';
+let shop=JSON.parse(localStorage.getItem(SHKEY)||'{}');
+const SHOP=[
+ ['Suiwel en eiers',['Eiers','Greek jogurt — gewone, nie gegeurde nie','Maaskaas','Kaas (cheddar of feta)','Melk']],
+ ['Proteïen',['Hoender','Stokvis of kabeljou','Tuna in water','Lensies','Bone — blik of droog']],
+ ['Brood en graan',['Lae-GI bruinbrood','Gewone hawermout — nie kits nie','Futurelife Zero Granola','Provita','Bruinrys']],
+ ['Groente',['Tamaties','Blaarslaai','Komkommer','Spinasie','Brokkoli','Uie','Sampioene','Patat']],
+ ['Vrugte',['Appels','Piesangs — vir saam met neute','Druiwe','Bessies']],
+ ['Neute en sade',['Amandels','Pekanneute','Sonneblomsaad','Grondboontjiebotter sonder suiker']],
+ ['Ander',['Avokado','Olyfolie','Kaneel','Rooibos','Replace-skudding']]
+];
+function renderShop(){
+  $('#shop').innerHTML=SHOP.map(([c,items])=>`<h3 class="shopcat">${c}</h3>`+items.map(i=>
+    `<button class="shopitem ${shop[i]?'on':''}" data-n="${i.replace(/"/g,'&quot;')}"><span class="bx">${shop[i]?'\u2713':''}</span><span class="nm">${i}</span></button>`).join('')).join('');
+}
+$('#shop').addEventListener('click',e=>{ const b=e.target.closest('.shopitem'); if(!b) return;
+  const n=b.dataset.n; shop[n]=!shop[n]; localStorage.setItem(SHKEY,JSON.stringify(shop)); renderShop(); if(navigator.vibrate) navigator.vibrate(8); });
+$('#b-shopclear').onclick=()=>{ shop={}; localStorage.setItem(SHKEY,'{}'); renderShop(); toast('Merke skoongemaak'); };
+function shopText(){ let t='INKOPIELYS \u2014 '+niceDate(todayISO())+'\n';
+  SHOP.forEach(([c,items])=>{ const need=items.filter(i=>!shop[i]); if(!need.length) return;
+    t+='\n'+c+'\n'+need.map(i=>'  \u2022 '+i).join('\n')+'\n'; });
+  return t; }
+$('#b-shopcopy').onclick=async()=>{ const t=shopText();
+  if(navigator.share){ try{ await navigator.share({title:'Inkopielys',text:t}); return; }catch(e){ if(e.name==='AbortError') return; } }
+  try{ await navigator.clipboard.writeText(t); toast('Gekopieer \u2014 plak dit in WhatsApp'); }catch{ toast('Kon nie kopieer nie'); } };
+
+$('#b-fbsave').onclick=()=>{ localStorage.setItem(FNKEY,$('#fb-note').value); toast('Gestoor op jou foon'); };
+function weekText(){
+  const days=allDays().slice(-7), set=new Set(days);
+  const rows=data.filter(r=>set.has(dayOf(r)));
+  let t='GLUKOSE-WEEK \u2014 '+niceDate(todayISO())+'\n\n';
+  days.forEach(d=>{ t+=niceDate(d)+'\n';
+    rows.filter(r=>dayOf(r)===d).forEach(r=>{
+      t+='  '+r.t.slice(11)+'  '+fmt(r.v)+'  '+KIND[r.k]+(r.m?'  ['+MOODW[r.m]+']':'')+(r.f?'  kos: '+r.f:'')+(r.n?'  nota: '+r.n:'')+'\n'; });
+    t+='\n'; });
+  const name=id=>{ for(const p of PLAN){ const o=p.opts.find(x=>x.id===id); if(o) return p.t+': '+o.n; } return id; };
+  const up=Object.keys(planfb).filter(k=>planfb[k]===1), dn=Object.keys(planfb).filter(k=>planfb[k]===-1);
+  t+='PLAN-TERUGVOER\n';
+  t+=up.length?'Hou van:\n'+up.map(k=>'  + '+name(k)).join('\n')+'\n':'Hou van: (niks gemerk)\n';
+  t+=dn.length?'Hou nie van:\n'+dn.map(k=>'  - '+name(k)).join('\n')+'\n':'Hou nie van: (niks gemerk)\n';
+  const nt=localStorage.getItem(FNKEY)||'';
+  t+='\nWAT SY SE:\n'+(nt.trim()||'(niks geskryf nie)')+'\n';
+  return t;
+}
+$('#b-week').onclick=async()=>{
+  localStorage.setItem(FNKEY,$('#fb-note').value);
+  const name='glukose-week-'+todayISO()+'.txt';
+  const file=new File([weekText()],name,{type:'text/plain'});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){ try{ await navigator.share({files:[file],title:'Glukose-week'}); return; }catch(e){ if(e.name==='AbortError') return; } }
+  const a=document.createElement('a'); a.href=URL.createObjectURL(file); a.download=name; a.click(); toast('L\u00EAer afgelaai');
+};
+
 /* ================= nav ================= */
-function show(s){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('on',x.id==='s-'+s));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.s===s));window.scrollTo(0,0);if(s==='graph')renderChart();}
+function show(s){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('on',x.id==='s-'+s));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.s===s));window.scrollTo(0,0);if(s==='graph')renderChart();if(s==='plan')renderPlan();}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.s));
 window.addEventListener('resize',()=>{if($('#s-graph').classList.contains('on'))renderChart();});
-function renderAll(){renderToday();renderChart();renderList();renderMore();}
+function renderAll(){renderToday();renderChart();renderList();renderMore();renderPlan();}
 resetForm(); renderAll();
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 
