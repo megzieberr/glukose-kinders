@@ -216,11 +216,7 @@ nav button.on{color:var(--meal)}
     </div>
     <button class="save" id="save" disabled>Stoor lesing</button>
     <details class="more">
-      <summary id="metasum">Verander datum, tyd of skryf 'n nota</summary>
-      <div class="meta">
-        <label>Datum<input type="date" id="f-date"></label>
-        <label>Tyd<input type="time" id="f-time"></label>
-      </div>
+      <summary id="metasum">Skryf 'n nota (opsioneel)</summary>
       <div class="meta"><label>Nota (opsioneel)<input type="text" id="f-note" placeholder="bv. na pap en wors" maxlength="60"></label></div>
     </details>
   </div>
@@ -361,7 +357,7 @@ nav button.on{color:var(--meal)}
   </div>
   <div class="settings">
     <label>Waarde (mmol/L)</label><input type="number" step="0.1" id="e-v" inputmode="decimal">
-    <div class="meta"><label>Datum<input type="date" id="e-date"></label><label>Tyd<input type="time" id="e-time"></label></div>
+    <label>Geneem op</label><div id="e-when" style="padding:10px 12px;border-radius:14px;background:var(--paper2);font-weight:700;color:var(--ink2)"></div>
     <label>Nota</label><input type="text" id="e-note" maxlength="60">
     <label>Kos</label><input type="text" id="e-food" maxlength="90">
     <label>Gevoel</label>
@@ -482,7 +478,7 @@ function closeSheet(id){ $(id).classList.remove('on'); if(sheetOpen===id){ sheet
 window.addEventListener('popstate',()=>{ if(sheetOpen){ $(sheetOpen).classList.remove('on'); sheetOpen=null; } });
 
 /* ================= entry ================= */
-let entry='', kind='meal', mood=null, tTouched=false, kTouched=false;
+let entry='', kind='meal', mood=null, kTouched=false;
 const disp=$('#disp'), verdict=$('#verdict'), saveBtn=$('#save');
 /* --- kos-veld + kieslys --- */
 $('#foodgrid').innerHTML=FOODS.map((f,i)=>`<button type="button" data-i="${i}"><i>${f[0]}</i><span>${f[1]}</span></button>`).join('');
@@ -505,7 +501,7 @@ $('#foodgrid').addEventListener('click',e=>{
 });
 document.querySelectorAll('#moods button').forEach(b=>b.onclick=()=>{ mood=(mood===b.dataset.m)?null:b.dataset.m; paintMood(); if(navigator.vibrate) navigator.vibrate(8); });
 function paintMood(){document.querySelectorAll('#moods button').forEach(b=>b.classList.toggle('on',b.dataset.m===mood));}
-function resetForm(){ entry=''; tTouched=false; kTouched=false; $('#f-date').value=todayISO(); $('#f-time').value=nowHM(); $('#f-note').value=''; $('#f-food').value=''; mood=null; paintFood(); paintMood(); kind=(new Date().getHours()<10)?'fast':'meal'; paintKinds(); paintEntry(); }
+function resetForm(){ entry=''; kTouched=false; $('#f-note').value=''; $('#f-food').value=''; mood=null; paintFood(); paintMood(); kind=(new Date().getHours()<10)?'fast':'meal'; paintKinds(); paintEntry(); }
 function paintKinds(){document.querySelectorAll('#s-home .kind').forEach(b=>b.classList.toggle('on',b.dataset.k===kind));}
 function paintEntry(){
   const v=parseFloat(entry.replace(',','.'));
@@ -525,10 +521,7 @@ $('#pad').addEventListener('click',e=>{
   paintEntry();
 });
 document.querySelectorAll('#s-home .kind').forEach(b=>b.onclick=()=>{kind=b.dataset.k;kTouched=true;paintKinds();});
-$('#f-date').addEventListener('input',()=>{tTouched=true;});
-$('#f-time').addEventListener('input',()=>{tTouched=true;});
 function freshen(){ if(document.hidden) return;
-  if(!tTouched){ $('#f-date').value=todayISO(); $('#f-time').value=nowHM(); }
   if(!kTouched && !entry){ kind=(new Date().getHours()<10)?'fast':'meal'; paintKinds(); }
   renderToday();
 }
@@ -536,8 +529,7 @@ document.addEventListener('visibilitychange',freshen);
 window.addEventListener('pageshow',freshen);
 saveBtn.onclick=()=>{
   const v=parseFloat(entry.replace(',','.')); if(isNaN(v)) return;
-  if(!tTouched){ $('#f-date').value=todayISO(); $('#f-time').value=nowHM(); }
-  const t=$('#f-date').value+'T'+($('#f-time').value||nowHM());
+  const t=todayISO()+'T'+nowHM();
   const note=$('#f-note').value.trim()||undefined;
   const food=$('#f-food').value.trim()||undefined;
   data.push({id:Date.now().toString(36),t,v,k:kind,n:note,f:food,m:mood||undefined});
@@ -700,13 +692,13 @@ let eMood=null;
 function paintEMood(){document.querySelectorAll('#e-moods button').forEach(b=>b.classList.toggle('on',b.dataset.m===eMood));}
 document.querySelectorAll('#e-moods button').forEach(b=>b.onclick=()=>{ eMood=(eMood===b.dataset.m)?null:b.dataset.m; paintEMood(); });
 function openEdit(id){ const r=data.find(x=>x.id===id); if(!r) return; editing=r;
-  $('#e-v').value=r.v; $('#e-date').value=r.t.slice(0,10); $('#e-time').value=r.t.slice(11); $('#e-note').value=r.n||'';
+  $('#e-v').value=r.v; $('#e-when').textContent=niceDate(r.t.slice(0,10))+' om '+r.t.slice(11); $('#e-note').value=r.n||'';
   $('#e-food').value=r.f||''; eMood=r.m||null; paintEMood();
   document.querySelectorAll('#e-kinds .kind').forEach(b=>b.classList.toggle('on',b.dataset.k===r.k)); openSheet('#sheet'); }
 document.querySelectorAll('#e-kinds .kind').forEach(b=>b.onclick=()=>{editing.k=b.dataset.k;document.querySelectorAll('#e-kinds .kind').forEach(x=>x.classList.toggle('on',x===b));});
 $('#e-cancel').onclick=()=>{closeSheet('#sheet');data=load();};
 $('#e-save').onclick=()=>{const v=parseFloat($('#e-v').value);if(isNaN(v)||v<1||v>35){toast('Kyk weer na die waarde');return;}
-  editing.v=v; editing.t=$('#e-date').value+'T'+$('#e-time').value; editing.n=$('#e-note').value.trim()||undefined;
+  editing.v=v; editing.n=$('#e-note').value.trim()||undefined;
   editing.f=$('#e-food').value.trim()||undefined; editing.m=eMood||undefined; if(editing.k==='hist') editing.k='meal';
   closeSheet('#sheet'); persist(); toast('Verander');};
 $('#e-del').onclick=()=>{ if(!confirm('Hierdie lesing uitvee? ('+fmt(editing.v)+' mmol/L)')) return; data=data.filter(x=>x!==editing); closeSheet('#sheet'); persist(); toast('Uitgevee'); };
