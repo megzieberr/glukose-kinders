@@ -482,7 +482,7 @@ function closeSheet(id){ $(id).classList.remove('on'); if(sheetOpen===id){ sheet
 window.addEventListener('popstate',()=>{ if(sheetOpen){ $(sheetOpen).classList.remove('on'); sheetOpen=null; } });
 
 /* ================= entry ================= */
-let entry='', kind='meal', mood=null;
+let entry='', kind='meal', mood=null, tTouched=false, kTouched=false;
 const disp=$('#disp'), verdict=$('#verdict'), saveBtn=$('#save');
 /* --- kos-veld + kieslys --- */
 $('#foodgrid').innerHTML=FOODS.map((f,i)=>`<button type="button" data-i="${i}"><i>${f[0]}</i><span>${f[1]}</span></button>`).join('');
@@ -505,7 +505,7 @@ $('#foodgrid').addEventListener('click',e=>{
 });
 document.querySelectorAll('#moods button').forEach(b=>b.onclick=()=>{ mood=(mood===b.dataset.m)?null:b.dataset.m; paintMood(); if(navigator.vibrate) navigator.vibrate(8); });
 function paintMood(){document.querySelectorAll('#moods button').forEach(b=>b.classList.toggle('on',b.dataset.m===mood));}
-function resetForm(){ entry=''; $('#f-date').value=todayISO(); $('#f-time').value=nowHM(); $('#f-note').value=''; $('#f-food').value=''; mood=null; paintFood(); paintMood(); kind=(new Date().getHours()<10)?'fast':'meal'; paintKinds(); paintEntry(); }
+function resetForm(){ entry=''; tTouched=false; kTouched=false; $('#f-date').value=todayISO(); $('#f-time').value=nowHM(); $('#f-note').value=''; $('#f-food').value=''; mood=null; paintFood(); paintMood(); kind=(new Date().getHours()<10)?'fast':'meal'; paintKinds(); paintEntry(); }
 function paintKinds(){document.querySelectorAll('#s-home .kind').forEach(b=>b.classList.toggle('on',b.dataset.k===kind));}
 function paintEntry(){
   const v=parseFloat(entry.replace(',','.'));
@@ -524,9 +524,19 @@ $('#pad').addEventListener('click',e=>{
   if(navigator.vibrate) navigator.vibrate(8);
   paintEntry();
 });
-document.querySelectorAll('#s-home .kind').forEach(b=>b.onclick=()=>{kind=b.dataset.k;paintKinds();});
+document.querySelectorAll('#s-home .kind').forEach(b=>b.onclick=()=>{kind=b.dataset.k;kTouched=true;paintKinds();});
+$('#f-date').addEventListener('input',()=>{tTouched=true;});
+$('#f-time').addEventListener('input',()=>{tTouched=true;});
+function freshen(){ if(document.hidden) return;
+  if(!tTouched){ $('#f-date').value=todayISO(); $('#f-time').value=nowHM(); }
+  if(!kTouched && !entry){ kind=(new Date().getHours()<10)?'fast':'meal'; paintKinds(); }
+  renderToday();
+}
+document.addEventListener('visibilitychange',freshen);
+window.addEventListener('pageshow',freshen);
 saveBtn.onclick=()=>{
   const v=parseFloat(entry.replace(',','.')); if(isNaN(v)) return;
+  if(!tTouched){ $('#f-date').value=todayISO(); $('#f-time').value=nowHM(); }
   const t=$('#f-date').value+'T'+($('#f-time').value||nowHM());
   const note=$('#f-note').value.trim()||undefined;
   const food=$('#f-food').value.trim()||undefined;

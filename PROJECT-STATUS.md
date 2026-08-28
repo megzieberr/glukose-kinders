@@ -1,6 +1,7 @@
 # Glukose Kinders — PROJECT STATUS
 
-**Last session:** 2026-08-25 (sw v11 shipped: 58-icon food logging + feeling chip + Meal Plan tab. Afternoon: label verdicts for her products, two WhatsApp rule-cards on the Desktop, and the “Is dit reg?” checker SPEC'd — see `PLAN-is-dit-reg.md`, build not started)
+**Last session:** 2026-08-28 (v12: fixed stale date/time on the entry form — a resumed PWA kept the previous save's stamp, so quick saves could get the wrong time or day; committed, awaiting push. Also: peanut butter + gouda minis approved, week analysed, private folder `Desktop\Glukose Mamma` created)
+**Previous:** 2026-08-25 (sw v11 shipped: 58-icon food logging + feeling chip + Meal Plan tab. Afternoon: label verdicts for her products, two WhatsApp rule-cards on the Desktop, and the “Is dit reg?” checker SPEC'd — see `PLAN-is-dit-reg.md`, build not started)
 **Live:** https://megzieberr.github.io/glukose-kinders/ (GitHub Pages, repo `megzieberr/glukose-kinders`, PUBLIC)
 **Installed on:** Megan's mom's phone (Brave, Android) — via the browser menu "Add to home screen"
 
@@ -31,6 +32,7 @@ Name from her doctor's story: beta cells are "stout kinders" who skip their home
   - *Die vier reëls*, a 10-item **Ruil om** swap list, and an **Inkopielys** with tick-off items (`glukose.shop`) plus a share button that lists only what is NOT yet ticked.
   - *Stuur my week vir Megan* → a .txt with the last 7 days of readings + food + feelings + which meals she liked + her free-text note. That is the feedback loop: her mom exports, Megan sends it here, the plan gets updated.
 - **Photo-AI “yay/nay” scanner DECLINED** (Fable design ruling, accepted 2026-08-25): needs a paid key that can't live in a public repo, a binary verdict is the wrong shape (real answers are “yes, IF…”), and it kills the label-reading skill. Approved instead: the typed three-number **“Is dit reg?” checker** — full spec + rule table + test fixtures in `PLAN-is-dit-reg.md`. Barcode auto-fill is a v2 candidate only.
+- **Timestamp trust (2026-08-28, sw v12):** the entry form's Datum/Tyd were only stamped on cold load and after a save — a PWA resumed from the background silently kept the old stamp, so a quick save could land on the wrong time or even the wrong day. Now: `visibilitychange`/`pageshow` re-stamp untouched fields (and re-guess Voor/Na ete while nothing is typed), and save re-stamps once more as a backstop. A HAND-EDITED date/time is never overwritten (tracked via `tTouched`) — deliberate backdating still works. Verified with 5 Playwright checks at 360px. Context: her mom genuinely takes readings minutes apart (doctor: the swings match her diagnosis) — the readings were real; only some timestamps were suspect.
 - **Plan content is food-only, on purpose** (her ruling 2026-08-25): no diagnosis, no medicine names, no personal details anywhere in the repo. The medical reasoning behind the plan (why certain proteins were chosen, why there are no-appetite options, the product notes, the questions for the doctor) lives OUTSIDE the repo, in `Desktop\glukose-mamma-notas.md`. Keep it that way.
 
 ## Data / privacy — the one hard rule
@@ -54,9 +56,11 @@ Name from her doctor's story: beta cells are "stout kinders" who skip their home
 The in-app *Grafiek as PDF* now produces the same layout (v7), so the script is the fallback only. Routine if needed: her mom sends the CSV from *Meer → Deel / stoor alle lesings*; run `python graaf.py <die.csv>` (in this folder; band 4,5–6,0; missed days skipped) → `Desktop\Glukose_grafiek_<month>.pdf`. The in-app print can stay as is; don't spend more time on it.
 
 ## Pending on Megan
-- 📱 5 min **[blocking]**: after the deploy, open the app on her mom's phone twice, then check the **Meal Plan** tab loads and that one reading saves with food + a feeling.
-- 💻 1 min **[whenever]**: if the binned `glukose-aug2026.csv` wasn't meant to go, restore it from the Recycle Bin before emptying — after that her mom's phone + WhatsApp are the only copies.
+- 💻 1 min **[blocking]**: say "push it" — v12 (the timestamp fix) is committed but not yet on GitHub Pages.
+- 📱 1 min: after the push, her mom closes and reopens the app twice to pick up v12.
 - (Optional, some day: ask her mom to send a CSV backup via *Meer → Deel / stoor alle lesings* every few weeks.)
+
+*Cleared 2026-08-28: the on-phone check of the Meal Plan tab is done (her ruling), and `glukose-aug2026.csv` was restored from the Recycle Bin.*
 
 ## Next up
 - **Build the “Is dit reg?” checker** from `PLAN-is-dit-reg.md` (one card on Meal Plan, no storage, sw → v12; fixtures in the plan are the Playwright tests). Routine, well-scoped — Sonnet can take it end-to-end.
