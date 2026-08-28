@@ -1,6 +1,6 @@
 # Glukose Kinders — PROJECT STATUS
 
-**Last session:** 2026-08-28 (v13: time-editing removed entirely — her mom confirmed she was typing times in by hand, so the phone clock at the moment of Stoor is now the only time source; v12's resume-refresh landed the same day. Committed, awaiting push. Also: peanut butter + gouda minis approved, week analysed, private folder `Desktop\Glukose Mamma` created)
+**Last session:** 2026-08-28 (v13: time-editing removed entirely — her mom confirmed she was typing times in by hand, so the phone clock at the moment of Stoor is now the only time source; v12's resume-refresh landed the same day. SHIPPED + live-verified. Also: peanut butter + gouda minis approved, week analysed, private folder `Desktop\Glukose Mamma` created)
 **Previous:** 2026-08-25 (sw v11 shipped: 58-icon food logging + feeling chip + Meal Plan tab. Afternoon: label verdicts for her products, two WhatsApp rule-cards on the Desktop, and the “Is dit reg?” checker SPEC'd — see `PLAN-is-dit-reg.md`, build not started)
 **Live:** https://megzieberr.github.io/glukose-kinders/ (GitHub Pages, repo `megzieberr/glukose-kinders`, PUBLIC)
 **Installed on:** Megan's mom's phone (Brave, Android) — via the browser menu "Add to home screen"
@@ -57,13 +57,16 @@ Name from her doctor's story: beta cells are "stout kinders" who skip their home
 The in-app *Grafiek as PDF* now produces the same layout (v7), so the script is the fallback only. Routine if needed: her mom sends the CSV from *Meer → Deel / stoor alle lesings*; run `python graaf.py <die.csv>` (in this folder; band 4,5–6,0; missed days skipped) → `Desktop\Glukose_grafiek_<month>.pdf`. The in-app print can stay as is; don't spend more time on it.
 
 ## Pending on Megan
-- 💻 1 min **[blocking]**: say "push it" — v13 (no more time editing) is committed but not yet on GitHub Pages.
-- 📱 1 min: after the push, her mom closes and reopens the app twice to pick up v13.
+- 📱 1 min **[blocking]**: tell her mom to close and reopen the app twice — v13 is live, her phone just needs to pick it up. New routine: prik, lees, stoor.
+- 📞 5 min **[blocking]**: tell the doctor her mom went from "Medication 1 2 1" to "2 3 2" on her own — this week, not at the follow-up.
+- (Optional, some day: ask her mom to send a CSV backup via *Meer → Deel / stoor alle lesings* every few weeks.)
 - (Optional, some day: ask her mom to send a CSV backup via *Meer → Deel / stoor alle lesings* every few weeks.)
 
 *Cleared 2026-08-28: the on-phone check of the Meal Plan tab is done (her ruling), and `glukose-aug2026.csv` was restored from the Recycle Bin.*
 
 ## Next up
+- After 3-4 days of clean (v13) stamps: line up "feels like crap at X" against what her sugar was actually doing at X — the question the hand-typed times made unanswerable. Her week export or a CSV into `Desktop\Glukose Mamma\csv` is the input.
+- Timestamps before 2026-08-28 are hand-typed and unreliable (her mom's admission) — analyse old data on values/daily patterns only, never on minute spacing.
 - **Build the “Is dit reg?” checker** from `PLAN-is-dit-reg.md` (one card on Meal Plan, no storage, sw → v12; fixtures in the plan are the Playwright tests). Routine, well-scoped — Sonnet can take it end-to-end.
 - After ~2 weeks of food logging: rank her real meals by what they did to her (the app will have the data — show "hierdie ontbyt: gem. 6,1 na ete" next to each plan option). This was always the point of the icons.
 - Her mom exports her week from the Meal Plan tab → Megan sends the .txt here → the plan gets adjusted to what she actually liked and what actually worked.
