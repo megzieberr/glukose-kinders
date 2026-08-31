@@ -59,7 +59,7 @@ The in-app *Grafiek as PDF* now produces the same layout (v7), so the script is 
 ## Pending on Megan
 - Nothing. (2026-08-31 sweep, her word: both blocking items KILLED — telling her mom to reopen the app for v13, and telling the doctor about the self-made "1 2 1" → "2 3 2" dose change.
   ⚠ Consequences to leave written down, not to re-raise with her: her mom may sit on a pre-v13 app until she happens to reopen it twice, and the dose change now waits for the follow-up appointment. Her call, made with both stated.)
-- (2026-08-31 sweep, her word: the optional "ask her mom for a CSV backup every few weeks" item is KILLED — it was listed twice and is now gone. The two blocking items above still stand.)
+- (2026-08-31 sweep, her word: the optional "ask her mom for a CSV backup every few weeks" item is KILLED — it was listed twice and is now gone. Nothing is left on this list.)
 
 *Cleared 2026-08-28: the on-phone check of the Meal Plan tab is done (her ruling), and `glukose-aug2026.csv` was restored from the Recycle Bin.*
 
