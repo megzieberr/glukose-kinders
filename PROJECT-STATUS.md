@@ -1,7 +1,7 @@
 # Glukose Kinders — PROJECT STATUS
 
-**Last session:** 2026-08-28 (v13: time-editing removed entirely — her mom confirmed she was typing times in by hand, so the phone clock at the moment of Stoor is now the only time source; v12's resume-refresh landed the same day. SHIPPED + live-verified. Also: peanut butter + gouda minis approved, week analysed, private folder `Desktop\Glukose Mamma` created)
-**Previous:** 2026-08-25 (sw v11 shipped: 58-icon food logging + feeling chip + Meal Plan tab. Afternoon: label verdicts for her products, two WhatsApp rule-cards on the Desktop, and the “Is dit reg?” checker SPEC'd — see `PLAN-is-dit-reg.md`, build not started)
+**Last session:** 2026-11-15 (v14: 20 new Meal Plan options, "Voor slaaptyd" rewritten, new "Deur die nag" slot, a readable night note and a sensor-alarm card. SHIPPED `079e903`. Her mom now uses the app for the Meal Plan only; a sensor does her readings.)
+**Previous:** 2026-08-28 (v13: time-editing removed entirely — her mom confirmed she was typing times in by hand, so the phone clock at the moment of Stoor is now the only time source; v12's resume-refresh landed the same day. SHIPPED + live-verified. Also: peanut butter + gouda minis approved, week analysed, private folder `Desktop\Glukose Mamma` created)
 **Live:** https://megzieberr.github.io/glukose-kinders/ (GitHub Pages, repo `megzieberr/glukose-kinders`, PUBLIC)
 **Installed on:** Megan's mom's phone (Brave, Android) — via the browser menu "Add to home screen"
 
@@ -34,14 +34,22 @@ Name from her doctor's story: beta cells are "stout kinders" who skip their home
 - **Photo-AI “yay/nay” scanner DECLINED** (Fable design ruling, accepted 2026-08-25): needs a paid key that can't live in a public repo, a binary verdict is the wrong shape (real answers are “yes, IF…”), and it kills the label-reading skill. Approved instead: the typed three-number **“Is dit reg?” checker** — full spec + rule table + test fixtures in `PLAN-is-dit-reg.md`. Barcode auto-fill is a v2 candidate only.
 - **Time-editing REMOVED (2026-08-28, sw v13, Megan's ruling):** her mom confirmed she was typing reading times in by hand (logging later, from memory), which made the timestamps untrustworthy. Ruling: she must not be able to set the time at all. The Datum/Tyd inputs are gone from the entry form (the details row is note-only now) and from the edit sheet (replaced by a read-only "Geneem op" line); `t` is stamped from the phone clock inside the save handler, and edit-save never touches `t`. Consequence, accepted: a reading logged late carries the logging time — the routine is now prik, lees, stoor. The kind auto-guess still refreshes on resume. Verified: zero date/time inputs in the DOM, save stamps now, edit preserves `t`.
 - **Timestamp trust (2026-08-28, sw v12):** the entry form's Datum/Tyd were only stamped on cold load and after a save — a PWA resumed from the background silently kept the old stamp, so a quick save could land on the wrong time or even the wrong day. Now: `visibilitychange`/`pageshow` re-stamp untouched fields (and re-guess Voor/Na ete while nothing is typed), and save re-stamps once more as a backstop. A HAND-EDITED date/time is never overwritten (tracked via `tTouched`) — deliberate backdating still works. Verified with 5 Playwright checks at 360px. Context: her mom genuinely takes readings minutes apart (doctor: the swings match her diagnosis) — the readings were real; only some timestamps were suspect.
-- **Plan content is food-only, on purpose** (her ruling 2026-08-25): no diagnosis, no medicine names, no personal details anywhere in the repo. The medical reasoning behind the plan (why certain proteins were chosen, why there are no-appetite options, the product notes, the questions for the doctor) lives OUTSIDE the repo, in `Desktop\glukose-mamma-notas.md`. Keep it that way.
+- **Plan content is food-only, on purpose** (her ruling 2026-08-25): no diagnosis, no medicine names, no personal details anywhere in the repo. The medical reasoning behind the plan (why certain proteins were chosen, why there are no-appetite options, the product notes, the questions for the doctor) lives OUTSIDE the repo, in `Desktop\Claude Code Projects\Glukose Mamma\glukose-mamma-notas.md`. Keep it that way.
+- **Night slots + alarm card (2026-11-15, sw v14, her mom's ask through Megan):**
+  - *Voor slaaptyd* is now "every evening, even when not hungry". The old "Niks nodig nie, net water" option is REMOVED: do not bring it back.
+  - New slot *Deur die nag* (id `nag`, 22:00 to 05:00, wraps midnight; `curSlot()` handles `from > to`). Three tiny snacks to keep next to the bed.
+  - Night snacks are **slow starch WITH protein**. Protein alone (nuts, cheese) is a daytime snack, not a bedtime one.
+  - Card *Saans en deur die nag* = the note she reads. Card *As die sensor in die nag alarm maak* = prick first, something sweet only if really under 4,0, re-check after 15 minutes, then a slow snack. That card is the ONE exception to rule 3, and rule 3 points at it.
+  - App wording stays general ("elke keer as jy opstaan"). Why she gets up, and everything medical behind the night section, lives in the private notas file only.
+  - Hummus is hard to find where she lives, so the dip is smooth maaskaas; chickpeas are always worded "kekerertjies of bone".
+  - New option ids: b6-b10, s5-s7, m5-m9, n4-n6, a5-a8, v3, v4, x1-x3 (v1 kept its id with new text; v2 is gone). Old ids and their text are untouched, so her thumbs survive.
 
 ## Data / privacy — the one hard rule
 **No readings ever go into the repo.** `*.csv` is gitignored. Her August 2026 history was in `Desktop\glukose-aug2026.csv` (139 readings, duplicates already removed) — **that file went to the Recycle Bin with the old Desktop folder on 2026-08-24** and is only recoverable until the bin is emptied; her mom still has the data on her phone plus the WhatsApped copy. The app folder now lives at `Desktop\Claude Code Projects\glukose-app` (fresh clone). Import stays *Meer → Bring lêer in (CSV)*. Import de-duplicates on date+time+value, so re-importing is safe. Imported August rows are kind `hist` ("Ouer lesings", grey).
 
 ## Files
 - `index.html` — whole app (CSS + JS inline). Sections: entry / today / chart / list / more / install sheet / edit sheet.
-- `sw.js` — cache name `glukose-vN`. **Bump N on every change** or phones keep the old version. Currently **v11**.
+- `sw.js` — cache name `glukose-vN`. **Bump N on every change** or phones keep the old version. Currently **v14**.
 - CSV import now also reads the `nota` column (was dropped before 2026-08-24) and maps tipe "Voor ete" back to `fast`.
 - `manifest.json`, `icons/` — PWA bits. `README.md` — short public description.
 - Storage keys: `glukose.v1` (readings array `{id,t:'YYYY-MM-DDTHH:MM',v,k:'fast'|'meal'|'hist',n?,f?,m?}`), `glukose.targets`, `glukose.installLater`, `glukose.planfb` (👍/👎 per meal), `glukose.shop` (ticked shopping items), `glukose.fbnote` (her note to Megan).
@@ -57,14 +65,18 @@ Name from her doctor's story: beta cells are "stout kinders" who skip their home
 The in-app *Grafiek as PDF* now produces the same layout (v7), so the script is the fallback only. Routine if needed: her mom sends the CSV from *Meer → Deel / stoor alle lesings*; run `python graaf.py <die.csv>` (in this folder; band 4,5–6,0; missed days skipped) → `Desktop\Glukose_grafiek_<month>.pdf`. The in-app print can stay as is; don't spend more time on it.
 
 ## Pending on Megan
-- Nothing. (2026-08-31 sweep, her word: both blocking items KILLED — telling her mom to reopen the app for v13, and telling the doctor about the self-made "1 2 1" → "2 3 2" dose change.
+- 📱 1 min **[blocking]**: tell her mom to close and reopen the app twice, so her phone picks up v14 (the night snacks and the alarm card).
+- 📱 2 min **[whenever]**: ask her mom if the low alarm on her sensor app is on, at what number, and if it is loud enough to wake her.
+- Older items: none. (2026-08-31 sweep, her word: both blocking items KILLED — telling her mom to reopen the app for v13, and telling the doctor about the self-made "1 2 1" → "2 3 2" dose change.
   ⚠ Consequences to leave written down, not to re-raise with her: her mom may sit on a pre-v13 app until she happens to reopen it twice, and the dose change now waits for the follow-up appointment. Her call, made with both stated.)
 - (2026-08-31 sweep, her word: the optional "ask her mom for a CSV backup every few weeks" item is KILLED — it was listed twice and is now gone. Nothing is left on this list.)
 
 *Cleared 2026-08-28: the on-phone check of the Meal Plan tab is done (her ruling), and `glukose-aug2026.csv` was restored from the Recycle Bin.*
 
 ## Next up
-- After 3-4 days of clean (v13) stamps: line up "feels like crap at X" against what her sugar was actually doing at X — the question the hand-typed times made unanswerable. Her week export or a CSV into `Desktop\Glukose Mamma\csv` is the input.
+- **After about a week on v14:** her mom taps 👍/👎 on the new options and sends *Stuur my week vir Megan*. Drop what she dislikes, add more of what she likes. She asked for variety, so a second batch of options is welcome whenever she is bored again.
+- She no longer logs readings in the app (a sensor does that), so the items below that need app readings wait for a sensor export instead. Ask Megan before building anything that reads sensor data.
+- After 3-4 days of clean (v13) stamps: line up "feels like crap at X" against what her sugar was actually doing at X — the question the hand-typed times made unanswerable. Her week export or a CSV into `Desktop\Claude Code Projects\Glukose Mamma\csv` is the input.
 - Timestamps before 2026-08-28 are hand-typed and unreliable (her mom's admission) — analyse old data on values/daily patterns only, never on minute spacing.
 - **Build the “Is dit reg?” checker** from `PLAN-is-dit-reg.md` (one card on Meal Plan, no storage, sw → v12; fixtures in the plan are the Playwright tests). Routine, well-scoped — Sonnet can take it end-to-end.
 - After ~2 weeks of food logging: rank her real meals by what they did to her (the app will have the data — show "hierdie ontbyt: gem. 6,1 na ete" next to each plan option). This was always the point of the icons.
