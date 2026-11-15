@@ -303,9 +303,28 @@ nav button.on{color:var(--meal)}
     <h2>Die vier reëls</h2>
     <div class="rule"><b>1</b><span>Nooit brood, pap, vrugte of iets soets <b>alleen</b> nie — altyd iets met proteïen of vet daarby (eier, kaas, jogurt, neute, avo).</span></div>
     <div class="rule"><b>2</b><span>Klein bietjies, <b>elke 3 uur</b>. 'n Groot bord ná lank niks is presies wat die spyker maak.</span></div>
-    <div class="rule"><b>3</b><span>Niks soets op 'n <b>leë maag</b> nie — sap, koeldrank, heuning, 'n skudding op sy eie.</span></div>
+    <div class="rule"><b>3</b><span>Niks soets op 'n <b>leë maag</b> nie — sap, koeldrank, heuning, 'n skudding op sy eie. Die een uitsondering is 'n regtig lae suiker: kyk na die alarm-kaart hieronder.</span></div>
     <div class="rule"><b>4</b><span>Eet <b>binne 'n uur</b> nadat jy wakker word, selfs al is jy glad nie honger nie. Klein is beter as niks.</span></div>
     <p class="hint" style="margin-top:12px">Drink deur die dag water — meer as wat voel nodig is.</p>
+  </div>
+
+  <div class="card">
+    <h2>Saans en deur die nag</h2>
+    <p style="margin:8px 0">Saans en snags werk dit 'n bietjie anders as bedags.</p>
+    <p style="margin:8px 0">Bedags hou die proteïen die stysel stadig. Snags het jy 'n bietjie <b>stadige stysel</b> nodig wat ure lank hou, mét proteïen langsaan. Neute of kaas alleen is nie genoeg voor slaaptyd nie.</p>
+    <p style="margin:8px 0"><b>Voor slaaptyd:</b> eet elke aand iets klein, selfs as jy nie honger is nie.</p>
+    <p style="margin:8px 0"><b>Deur die nag:</b> elke keer as jy opstaan, eet 'n paar happies. Probeer om nie langer as omtrent drie uur te gaan nie. Sit die happie langs die bed reg voor jy gaan slaap.</p>
+    <p style="margin:8px 0"><b>Klein en stadig, nooit soet nie.</b></p>
+    <p style="margin:8px 0">Jou sensor sal binne 'n paar nagte wys of dit help.</p>
+  </div>
+
+  <div class="card">
+    <h2>As die sensor in die nag alarm maak</h2>
+    <div class="rule"><b>1</b><span>Prik eers jou vinger. As jy op die arm met die sensor lê, kan dit 'n vals lae syfer wys.</span></div>
+    <div class="rule"><b>2</b><span>Is dit regtig onder 4,0? Drink 'n halwe glas (omtrent 150 ml) vrugtesap of gewone koeldrank (nie die suikervrye soort nie), of eet 'n eetlepel heuning. Wag 15 minute en prik weer. Steeds onder 4,0? Doen dit nog een keer.</span></div>
+    <div class="rule"><b>3</b><span>Sodra dit weer bo 4,0 is: eet een van die nag-happies, sodat dit nie weer val nie.</span></div>
+    <p style="margin:10px 0">Dit is die <b>enigste</b> keer wat iets soets op 'n leë maag reg is.</p>
+    <p style="margin:10px 0 0;background:#F6E0DB;color:var(--meal);border-radius:14px;padding:10px 12px;font-weight:800">As jy deurmekaar voel, nie reg kan sluk nie, of die syfer kom nie op ná twee keer nie: dit is 'n noodgeval. Kry dadelik hulp.</p>
   </div>
 
   <div class="card">
@@ -750,12 +769,25 @@ const PLAN=[
    {id:'b5',n:"Die Replace-skudding — maar op sy eie, sonder 'n piesang of vrug daarby",
         w:"Replace is self die ete (\"your meal in a glass\"). 'n Piesang bo-op is 'n tweede ete se koolhidrate in dieselfde oomblik. As jy iets by wil hê, maak dit 'n gekookte eier of neute — nie vrug nie."},
    {id:'b4',n:"Nie honger nie? Klein bakkie jogurt met neute, of maaskaas op twee Provitas",
-        w:"Klein is beter as niks. Sonder ontbyt is die vermoeide gevoel teen elfuur amper seker."}]},
+        w:"Klein is beter as niks. Sonder ontbyt is die vermoeide gevoel teen elfuur amper seker."},
+   {id:'b6',n:"Roereier met tamatie en spinasie op een snytjie lae-GI bruinbrood",
+        w:"Die eier en die groente maak dat die een sny brood stadig deurkom."},
+   {id:'b7',n:"Maaskaas met bessies en 'n lepel sonneblomsaad",
+        w:"Die bessies is soet, maar die maaskaas en die saad hou hulle stadig."},
+   {id:'b8',n:"Oornag-hawermout: gewone hawermout (nie kits nie), oornag geweek in gewone jogurt met 'n lepel chiasaad",
+        w:"Jy maak dit die aand voor, so daar is soggens niks om te doen nie. Die jogurt en chia hou die hawer stadig."},
+   {id:'b9',n:"Een snytjie lae-GI bruinbrood met grondboontjiebotter sonder suiker, en 'n halwe piesang in skyfies bo-op",
+        w:"Die grondboontjiebotter is wat die piesang veilig maak. Nooit die piesang alleen nie."},
+   {id:'b10',n:"Nie honger nie? Een gekookte eier en 'n klein stukkie kaas",
+        w:"Klein is beter as niks, en daar is byna geen suiker in nie."}]},
  {id:'snack1',t:'Iets klein voormiddag',from:9.5,to:11.5,sub:'Omtrent drie uur ná ontbyt',opts:[
    {id:'s1',n:"'n Appel met kaasblokkies",w:"Die vrug alleen sou opskiet. Die kaas hou dit plat."},
    {id:'s2',n:"'n Handvol neute — amandels, pekanneute of okkerneute",w:"Vet en vesel, byna geen suiker."},
    {id:'s3',n:"Maaskaas op twee Provitas",w:"Proteïen met 'n bietjie stadige stysel."},
-   {id:'s4',n:"'n Gekookte eier",w:"Die maklikste een as jy nie lus is vir eet nie."}]},
+   {id:'s4',n:"'n Gekookte eier",w:"Die maklikste een as jy nie lus is vir eet nie."},
+   {id:'s5',n:"'n Klein stukkie kaas met kersietamaties",w:"Byna geen koolhidraat nie, maar dit hou jou tot middagete."},
+   {id:'s6',n:"Peer- of appelskyfies met grondboontjiebotter",w:"Die vrug alleen sou opskiet. Die grondboontjiebotter hou dit plat."},
+   {id:'s7',n:"Wortel- en komkommerstokkies met gladde maaskaas om in te doop",w:"Lekker kraakvars, en die maaskaas gee die proteïen."}]},
  {id:'middag',t:'Middagete',from:11.5,to:14.5,sub:'Omtrent 12:00 tot 13:00',opts:[
    {id:'m0',n:"Bruinbrood met kaas en tamatie",
         w:"Die kaas is die proteïen en die vet — dis presies wat die brood stadig maak. Een sny is beter as twee, en nog tamatie of blaarslaai maak dit nog stadiger."},
@@ -766,11 +798,24 @@ const PLAN=[
    {id:'m3',n:"Lensie- of bonesop met 'n snytjie brood",
         w:"Bone en lensies is van die stadigste koolhidrate wat daar is."},
    {id:'m4',n:"Oorskiet van gisteraand se aandete, halwe porsie",
-        w:"Beter as om middagete oor te slaan."}]},
+        w:"Beter as om middagete oor te slaan."},
+   {id:'m5',n:"Kekerertjieslaai: kekerertjies of bone uit 'n blik (afgespoel), komkommer, tamatie, feta en olyfolie. Geen kook nie.",
+        w:"Kekerertjies en bone is van die stadigste koolhidrate. Die feta en olie maak dit nog stadiger."},
+   {id:'m6',n:"Twee gekookte eiers op slaai met avo en twee Provitas",
+        w:"Die eier en avo saam beteken die Provitas kom stadig deur."},
+   {id:'m7',n:"Tuna met blikbone (afgespoel), tamatie en ui",
+        w:"Proteïen en bone in een bak. Dit hou jou lank vol."},
+   {id:'m8',n:"Hoender-en-groentesop met gars. Kook een keer en vries dit in porsies.",
+        w:"Gars is 'n stadige graan. As die sop in die vrieskas is, is middagete net opwarm."},
+   {id:'m9',n:"'n Klein gebakte patat met maaskaas en slaai",
+        w:"Hou die patat klein. Die maaskaas en die slaai hou dit stadig."}]},
  {id:'snack2',t:'Iets klein namiddag',from:14.5,to:17,sub:'Die tyd wat jy gewoonlik plat voel',opts:[
    {id:'n1',n:"'n Handvol neute en 'n paar druiwe",w:"Die neute eerste, dan die vrug."},
    {id:'n2',n:"Klein bakkie jogurt",w:"Proteïen wat die middag deurdra tot aandete."},
-   {id:'n3',n:"Kaas met komkommer of tamatie",w:"Byna geen koolhidraat, hou die val weg."}]},
+   {id:'n3',n:"Kaas met komkommer of tamatie",w:"Byna geen koolhidraat, hou die val weg."},
+   {id:'n4',n:"Twee Provitas met avo",w:"Die avo se vet maak die Provitas stadig."},
+   {id:'n5',n:"'n Handvol geroosterde kekerertjies",w:"Knapperig soos 'n skyfie, maar stadig en vol proteïen."},
+   {id:'n6',n:"Gewone jogurt met 'n lepel chiasaad en 'n paar bessies",w:"Die jogurt en chia hou die bessies stadig."}]},
  {id:'aand',t:'Aandete',from:17,to:20,sub:'Verkieslik voor 19:00',opts:[
    {id:'a1',n:"Hoender of vis (stokvis, kabeljou) + baie groente + 'n vuis vol patat of bruinrys",
         w:"Die stysel bly by een vuis groot. Die groente vul die res van die bord."},
@@ -779,10 +824,23 @@ const PLAN=[
    {id:'a3',n:"Omelet met sampioene, tamatie en spinasie, met slaai langsaan",
         w:"As jy moeg is en nie wil kook nie."},
    {id:'a4',n:"Rooivleis eerder net af en toe, en klein — hoender, vis en eier is die daaglikse keuses",
-        w:"Hou ook die water hoog deur die dag."}]},
- {id:'aandsnack',t:'Voor slaaptyd',from:20,to:22,sub:'Net as jy honger is of die oggende laag begin',opts:[
-   {id:'v1',n:"Klein bakkie jogurt of 'n paar neute",w:"'n Bietjie proteïen voor slaap hou die oggendsyfer stabieler."},
-   {id:'v2',n:"Niks nodig nie — net water",w:"As jy nie honger is nie, is dit ook reg."}]}
+        w:"Hou ook die water hoog deur die dag."},
+   {id:'a5',n:"Hoender-roerbraai met baie groente en 'n vuis vol bruinrys",
+        w:"Die groente vul die bord. Die rys bly by een vuis groot."},
+   {id:'a6',n:"Gebakte stokvis met suurlemoen, groenbone en 'n paar baba-aartappels (hou die aartappels by een vuis)",
+        w:"Vis en groenbone is lig en stadig. Die aartappels is die stysel, so hou hulle klein."},
+   {id:'a7',n:"Hoender in een pan in die oond, met botterskorsie, murgpampoentjies en ui",
+        w:"Alles in een pan, so daar is min skottelgoed. Die groente doen die meeste van die werk."},
+   {id:'a8',n:"Lensiekerrie met baie groente en 'n vuis vol bruinrys",
+        w:"Lensies is stadig en vol proteïen. Die rys bly by een vuis."}]},
+ {id:'aandsnack',t:'Voor slaaptyd',from:20,to:22,sub:'Elke aand, selfs as jy nie honger is nie',opts:[
+   {id:'v1',n:"Een snytjie lae-GI bruinbrood met grondboontjiebotter of kaas",w:"Snags het jy 'n bietjie stadige stysel nodig wat deur die ure hou. Die grondboontjiebotter of kaas rek dit nog langer."},
+   {id:'v3',n:"'n Klein bakkie gewone jogurt met 'n paar lepels hawermout of granola",w:"Die hawer is die stadige stysel, die jogurt is die proteïen. Saam hou hulle langer as neute of kaas alleen."},
+   {id:'v4',n:"Twee of drie Provitas met maaskaas, en 'n glas melk",w:"Stadige stysel met proteïen langsaan. Dit hou die suiker deur die nag stabieler."}]},
+ {id:'nag',t:'Deur die nag',from:22,to:5,sub:"Elke keer as jy in die nag opstaan, 'n paar happies. Sit dit langs die bed reg voor jy gaan slaap.",opts:[
+   {id:'x1',n:"Een Provita met grondboontjiebotter of 'n klein stukkie kaas",w:"Net 'n paar happies. Genoeg om jou tot die volgende keer te dra."},
+   {id:'x2',n:"'n Halwe glas melk",w:"Maklik as jy nie lus is om te kou nie. Die melk het self proteïen in."},
+   {id:'x3',n:"'n Paar lepels gewone jogurt met hawermout",w:"'n Bietjie stadige stysel met proteïen, net klein."}]}
 ];
 const SWAPS=[
  ["Piesang op sy eie","piesang saam met neute of 'n lepel maaskaas"],
@@ -794,9 +852,10 @@ const SWAPS=[
  ["Koeldrank","water met suurlemoen, of 'n koppie rooibos"],
  ["Beskuit en koffie as ontbyt","jogurt met neute — en die koffie daarna"],
  ["Pap op sy eie","pap met melk en neute, en 'n eier langsaan"],
- ["'n Groot bord ná 'n lang tyd niks","die helfte daarvan, en dan weer iets oor drie uur"]
+ ["'n Groot bord ná 'n lang tyd niks","die helfte daarvan, en dan weer iets oor drie uur"],
+ ["Gaan slaap op 'n leë maag","eers 'n klein, stadige happie"]
 ];
-function curSlot(){ const d=new Date(), h=d.getHours()+d.getMinutes()/60; return PLAN.find(p=>h>=p.from&&h<p.to)||null; }
+function curSlot(){ const d=new Date(), h=d.getHours()+d.getMinutes()/60; return PLAN.find(p=>p.from<p.to?(h>=p.from&&h<p.to):(h>=p.from||h<p.to))||null; }
 function optHTML(o){ const f=planfb[o.id]||0;
   return `<div class="opt"><h3>${o.n}</h3><p>${o.w}</p><div class="thumbs"><button data-o="${o.id}" data-v="1" class="${f===1?'on':''}">\u{1F44D}</button><button data-o="${o.id}" data-v="-1" class="${f===-1?'on':''}">\u{1F44E}</button></div></div>`; }
 function renderPlan(){
@@ -825,11 +884,11 @@ const SHKEY='glukose.shop';
 let shop=JSON.parse(localStorage.getItem(SHKEY)||'{}');
 const SHOP=[
  ['Suiwel en eiers',['Eiers','Greek jogurt — gewone, nie gegeurde nie','Maaskaas','Kaas (cheddar of feta)','Melk']],
- ['Proteïen',['Hoender','Stokvis of kabeljou','Tuna in water','Lensies','Bone — blik of droog']],
- ['Brood en graan',['Lae-GI bruinbrood','Gewone hawermout — nie kits nie','Futurelife Zero Granola','Provita','Bruinrys']],
- ['Groente',['Tamaties','Blaarslaai','Komkommer','Spinasie','Brokkoli','Uie','Sampioene','Patat']],
- ['Vrugte',['Appels','Piesangs — vir saam met neute','Druiwe','Bessies']],
- ['Neute en sade',['Amandels','Pekanneute','Sonneblomsaad','Grondboontjiebotter sonder suiker']],
+ ['Proteïen',['Hoender','Stokvis of kabeljou','Tuna in water','Lensies','Bone — blik of droog','Kekerertjies in blik']],
+ ['Brood en graan',['Lae-GI bruinbrood','Gewone hawermout — nie kits nie','Futurelife Zero Granola','Provita','Bruinrys','Gars']],
+ ['Groente',['Tamaties','Blaarslaai','Komkommer','Spinasie','Brokkoli','Uie','Sampioene','Patat','Kersietamaties','Wortels','Groenbone','Murgpampoentjies','Botterskorsie','Baba-aartappels']],
+ ['Vrugte',['Appels','Piesangs — vir saam met neute','Druiwe','Bessies','Pere']],
+ ['Neute en sade',['Amandels','Pekanneute','Sonneblomsaad','Grondboontjiebotter sonder suiker','Chiasaad']],
  ['Ander',['Avokado','Olyfolie','Kaneel','Rooibos','Replace-skudding']]
 ];
 function renderShop(){
